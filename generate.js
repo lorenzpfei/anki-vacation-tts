@@ -146,7 +146,7 @@ async function generateCSV(phrases, outputPath, sourceDeckName, targetDeckName) 
       const escapedSourceNotes = sourceNotes.replace(/"/g, '""');
       const escapedTargetNotes = targetNotes.replace(/"/g, '""');
       
-      return `"${escapedSource}";"${escapedTarget}";[sound:audio/${targetDeckName}/${phrase.key}.mp3];"${escapedSourceNotes}";"${escapedTargetNotes}"`;
+      return `"${escapedSource}";"${escapedTarget}";[sound:${targetDeckName}_${phrase.key}.mp3];"${escapedSourceNotes}";"${escapedTargetNotes}"`;
     }).join('\n');
     
     const csvContent = csvHeader + csvRows;
@@ -179,7 +179,7 @@ async function processDeck(sourceDeckName, targetDeckName) {
   console.log(`📝 Number of phrases: ${deck.phrases.length}\n`);
 
   const outputDir = path.join(__dirname, 'output', `${sourceDeckName}-${targetDeckName}`);
-  const audioDir = path.join(__dirname, 'output', 'audio', targetDeckName);
+  const audioDir = path.join(__dirname, 'output', 'audio');
   
   try {
     await ensureDirectoryExists(outputDir);
@@ -200,11 +200,11 @@ async function processDeck(sourceDeckName, targetDeckName) {
     console.log(`${progress} Generating audio for: "${phrase.text}"`);
     
     try {
-      const audioPath = path.join(audioDir, `${phrase.key}.mp3`);
+      const audioPath = path.join(audioDir, `${targetDeckName}_${phrase.key}.mp3`);
       
       // Check if file already exists
       if (fs.existsSync(audioPath)) {
-        console.log(`  ⏭️  Skipping: ${phrase.key}.mp3 (already exists)`);
+        console.log(`  ⏭️  Skipping: ${targetDeckName}_${phrase.key}.mp3 (already exists)`);
         successCount++;
         continue;
       }
@@ -216,7 +216,7 @@ async function processDeck(sourceDeckName, targetDeckName) {
       }
       
       successCount++;
-      console.log(`  ✅ Success: ${phrase.key}.mp3`);
+      console.log(`  ✅ Success: ${targetDeckName}_${phrase.key}.mp3`);
     } catch (error) {
       errorCount++;
       console.error(`  ❌ Error with "${phrase.text}": ${error.message}`);

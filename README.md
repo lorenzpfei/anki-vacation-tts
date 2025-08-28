@@ -87,25 +87,22 @@ node generate.js
 
 ```
 output/
-├── audio/                  # Shared audio files by deck
-│   ├── deDE/
-│   │   ├── GREETING_HELLO.mp3
-│   │   ├── POLITENESS_THANK_YOU.mp3
-│   │   └── ...
-│   ├── sqAL/
-│   │   ├── GREETING_HELLO.mp3
-│   │   └── ...
+├── audio/                     # All audio files in one directory
+│   ├── deDE_GREETING_HELLO.mp3
+│   ├── deDE_POLITENESS_THANK_YOU.mp3
+│   ├── sqAL_GREETING_HELLO.mp3
+│   ├── sqAL_POLITENESS_THANK_YOU.mp3
 │   └── ...
-└── deDE-sqAL/              # Source-Target deck combinations
-    └── anki_deck.csv       # 5-column CSV for Anki
+└── deDE-sqAL/                 # Source-Target deck combinations
+    └── anki_deck.csv          # 5-column CSV for Anki
 ```
 
 ### CSV Format (5 columns)
 
 ```csv
 Source;Target;Audio;Source Notes;Target Notes
-"Ich heiße...";"Unë quhem...";"[sound:audio/sqAL/INTRODUCTION_MY_NAME.mp3]";"";""
-"Ich bin Vegetarier.";"Unë jam vegjetarian.";"[sound:audio/sqAL/DINING_VEGETARIAN.mp3]";"(f) Ich bin Vegetarierin.";"(f) Unë jam vegjetariane."
+"Ich heiße...";"Unë quhem...";"[sound:sqAL_INTRODUCTION_MY_NAME.mp3]";"";""
+"Ich bin Vegetarier.";"Unë jam vegjetarian.";"[sound:sqAL_DINING_VEGETARIAN.mp3]";"(f) Ich bin Vegetarierin.";"(f) Unë jam vegjetariane."
 ```
 
 ## 📲 Anki Import Tutorial
@@ -115,7 +112,7 @@ Source;Target;Audio;Source Notes;Target Notes
 1. Open Anki → `Tools` → `Add-ons` → `View Files`
 2. Go up one level to `Anki2` folder
 3. If `collection.media/` does not exists, you should be able to find it by going into `User 1` (or similar)
-4. Copy the entire `output/audio/` folder structure into `collection.media/` (preserving the folder hierarchy)
+4. Copy all files from `output/audio/` directory directly into `collection.media/`
 
 ### Step 2: Create Note Type
 
@@ -231,7 +228,7 @@ export const decks = {
    ```
 
 2. **Verify output:**
-   - Audio files created in `output/audio/trTR/`
+   - Audio files created in `output/audio/` with `trTR_` prefix
    - CSV generated with proper formatting
    - Listen to audio samples for quality
 
@@ -282,7 +279,7 @@ All phrases use authentic, colloquial expressions:
 
 ## 🎵 Audio Management
 
-- **Shared Audio**: Each language generates audio once in `output/audio/[deckCode]/`
+- **Flat Structure**: All audio files stored in `output/audio/` with deck prefixes
+- **Prefixed Names**: Files named as `[deckCode]_[PHRASE_KEY].mp3` (e.g., `deDE_GREETING_HELLO.mp3`)
 - **Efficient Storage**: Multiple deck combinations reuse the same audio files
 - **Smart Generation**: Audio files only created if they don't already exist
-- **Semantic Names**: Files named by purpose (e.g., `GREETING_HELLO.mp3`)
