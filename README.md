@@ -40,31 +40,17 @@ A Node.js tool that generates audio files from text phrases using Google Cloud T
 ### 1. Install Dependencies
 
 ```bash
-npm install @google-cloud/text-to-speech microsoft-cognitiveservices-speech-sdk dotenv
+pnpm add @google-cloud/text-to-speech microsoft-cognitiveservices-speech-sdk dotenv
 ```
 
 ### 2. API Keys Setup
 
-Create a `.env` file (see `.env.example`):
-
-```env
-# Google Cloud Text-to-Speech API Key (required)
-GOOGLE_API_KEY="your_google_api_key_here"
-
-# Azure Cognitive Services (for Albanian only)
-AZURE_SPEECH_KEY="your_azure_speech_key_here"
-AZURE_SPEECH_REGION="your_azure_region_here"
-```
+Create a `.env` file (see `.env.example`).
 
 ### 3. Get API Keys
 
 - **Google**: [Cloud Console](https://console.cloud.google.com/) → Enable Text-to-Speech API → Create API Key
 - **Azure**: [Speech Studio](https://speech.microsoft.com/) → Create Speech resource
-
-### Voices:
-
-- **Google**: [Supported voices and languages](https://cloud.google.com/text-to-speech/docs/list-voices-and-types)
-- **Azure**: [Supported voices and languages](https://learn.microsoft.com/en-gb/azure/ai-services/speech-service/language-support?tabs=tts)
 
 ## 🎯 Usage
 
@@ -124,13 +110,14 @@ Source;Target;Audio;Source Notes;Target Notes
 
 1. Open Anki → `Tools` → `Add-ons` → `View Files`
 2. Go up one level to `Anki2` folder
-3. Copy the entire `output/audio/` folder structure into `collection.media/` (preserving the folder hierarchy)
+3. If `collection.media/` does not exists, you should be able to find it by going into `User 1` (or similar)
+4. Copy the entire `output/audio/` folder structure into `collection.media/` (preserving the folder hierarchy)
 
 ### Step 2: Create Note Type
 
 1. `Tools` → `Manage Note Types` → `Add` → `Basic`
-2. Name it "Language Learning Card"
-3. Click `Fields...` and create these 5 fields:
+2. Name it "Language TTS Learning Card"
+3. Click `Fields...` and create these 5 fields (delete the existing ones):
    - `Source`
    - `Target`
    - `Audio`
@@ -141,10 +128,11 @@ Source;Target;Audio;Source Notes;Target Notes
 
 1. `File` → `Import...` → Select `anki_deck.csv`
 2. Settings:
-   - **Type**: "Language Learning Card"
+   - **Type**: "Language Learning Card" (you might need to toggle this field if the field mapping doesn't match)
    - **Fields separated by**: Semicolon
    - ✅ **Allow HTML in fields**
 3. Map columns: Field 1→Source, Field 2→Target, Field 3→Audio, Field 4→Source_Notes, Field 5→Target_Notes
+4. You might wanna delete the first card in the deck (our csv headers) by going into `Browse` -> Select the deck -> Select the first card -> Right click, notes, delete
 
 ### Step 4: Customize Card Template
 
@@ -185,7 +173,12 @@ Source;Target;Audio;Source Notes;Target Notes
 
 ## 🔧 Adding New Languages
 
-Use the provided `Prompt.md` with AI tools to generate new language files with authentic, colloquial phrases following the existing structure and cultural authenticity requirements.
+Use the provided [prompt](Prompt.md) with AI tools to generate new language files with authentic, colloquial phrases following the existing structure and cultural authenticity requirements.
+
+### Voices:
+
+- **Google**: [Supported voices and languages](https://cloud.google.com/text-to-speech/docs/list-voices-and-types)
+- **Azure**: [Supported voices and languages](https://learn.microsoft.com/en-gb/azure/ai-services/speech-service/language-support?tabs=tts)
 
 ## 🌟 Language Authenticity
 
@@ -207,5 +200,3 @@ All phrases use authentic, colloquial expressions:
 - **Efficient Storage**: Multiple deck combinations reuse the same audio files
 - **Smart Generation**: Audio files only created if they don't already exist
 - **Semantic Names**: Files named by purpose (e.g., `GREETING_HELLO.mp3`)
-
-💡 **Pro Tip**: Generate audio for each language once, then create unlimited deck combinations instantly!
