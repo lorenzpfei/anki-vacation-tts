@@ -1,0 +1,19 @@
+{
+    "name": "anki-vacation-tts",
+    "version": "1.0.0",
+    "description": "Generate audio flashcards for essential travel phrases",
+    "type": "module",
+    "scripts": {
+        "format": "prettier --write .",
+        "format:check": "prettier --check .",
+        "format:generator": "prettier --write generator/",
+        "format:frontend": "prettier --write frontend/"
+    },
+    "devDependencies": {
+        "prettier": "^3.0.0"
+    },
+    "workspaces": [
+        "generator",
+        "frontend"
+    ]
+}

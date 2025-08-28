@@ -1,0 +1,346 @@
+---
+/*
+  Anki Vacation TTS Generator — Single-file Astro component
+  Goal: Catchy landing that funnels users to GitHub (direct Star button)
+  Notes:
+  - Tailwind via CDN
+  - Inter font
+  - Dark, modern, responsive
+  - The previous "download/generator" section is commented out per request
+*/
+import '../styles/global.css'
+
+const LANGUAGES = [
+{ code: 'deDE', label: 'German (Germany)', flag: '🇩🇪' },
+{ code: 'elGR', label: 'Greek (Greece)', flag: '🇬🇷' },
+{ code: 'enGB', label: 'English (United Kingdom)', flag: '🇬🇧' },
+{ code: 'enUS', label: 'English (United States)', flag: '🇺🇸' },
+{ code: 'esCO', label: 'Spanish (Colombia)', flag: '🇨🇴' },
+{ code: 'esES', label: 'Spanish (Spain)', flag: '🇪🇸' },
+{ code: 'frFR', label: 'French (France)', flag: '🇫🇷' },
+{ code: 'itIT', label: 'Italian (Italy)', flag: '🇮🇹' },
+{ code: 'jaJP', label: 'Japanese (Japan)', flag: '🇯🇵' },
+{ code: 'ptBR', label: 'Portuguese (Brazil)', flag: '🇧🇷' },
+{ code: 'ptPT', label: 'Portuguese (Portugal)', flag: '🇵🇹' },
+{ code: 'sqAL', label: 'Albanian (Albania)', flag: '🇦🇱' },
+{ code: 'trTR', label: 'Turkish (Turkey)', flag: '🇹🇷' },
+].sort((a, b) => a.label.localeCompare(b.label) );
+
+const defaults = { from: 'enUS', to: 'deDE' };
+const title = 'Anki Vacation TTS Generator';
+const tagline = 'Learn only what you actually need for your vacation abroad.';
+const repoUrl = 'https://github.com/lorenzpfei/anki-vacation-tts';
+---
+
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={tagline} />
+    <link rel="icon" href="/logo.png" />
+</head>
+<body class="min-h-screen bg-[--bg] text-[--text] antialiased">
+<!-- Backdrop decorations -->
+<div aria-hidden="true" class="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
+    <div class="absolute -top-32 right-0 h-[36rem] w-[36rem] rounded-full bg-brand/20 blur-3xl"></div>
+    <div class="absolute -left-20 top-40 h-[28rem] w-[28rem] rounded-full bg-brand-2/20 blur-3xl"></div>
+    <div class="absolute bottom-[-10rem] left-1/2 h-[40rem] w-[40rem] -translate-x-1/2 rounded-full bg-white/5 blur-3xl"></div>
+</div>
+
+<header class="mx-auto max-w-7xl px-4 py-5">
+    <nav class="flex items-center justify-between gap-4">
+        <a href="/" class="group inline-flex items-center gap-2 hover:no-underline">
+            <img src="logo.png" alt="Logo" class="w-6"/>
+            <span class="text-[--text] text-lg font-semibold tracking-tight">Anki Vacation TTS</span>
+        </a>
+        <div class="flex items-center gap-2">
+            <a href={repoUrl} class="btn btn-ghost" rel="noopener noreferrer">GitHub</a>
+            <a href="#builder" class="btn btn-primary">Build my deck</a>
+        </div>
+    </nav>
+</header>
+
+<!-- HERO -->
+<section class="mx-auto max-w-7xl px-4 pt-4 pb-12 sm:pt-10">
+    <div class="grid items-center gap-10 sm:gap-12 md:grid-cols-2">
+        <div>
+          <span class="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white px-3 py-1 text-xs text-slate-800">
+            <span>Open Source</span>
+            <span class="h-1 w-1 rounded-full bg-slate-400"></span>
+            <a href={repoUrl} target="_blank" class="hover:underline">github.com/lorenzpfei/anki-vacation-tts</a>
+          </span>
+            <h1 class="mt-4 text-4xl font-extrabold tracking-tight sm:text-5xl">
+                Skip the Textbook.<br/>Master Travel Talk.
+            </h1>
+            <p class="mt-3 max-w-prose text-lg text-[--muted]">
+                {tagline} Generate audio flashcards with authentic, colloquial travel phrases, high‑quality TTS, and Anki‑ready CSV—without the fluff.
+            </p>
+            <div class="mt-6 flex flex-wrap items-center gap-3">
+                <a href="#builder" class="btn btn-primary">Start free →</a>
+                <a href={repoUrl} class="btn btn-ghost" rel="noopener noreferrer">⭐ Star on GitHub</a>
+            </div>
+            <ul class="mt-8 grid max-w-xl grid-cols-2 gap-2 text-sm text-[--muted]">
+                <li class="flex items-center gap-2"><span class="text-base">🎙️</span> Google Neural2 + Azure TTS</li>
+                <li class="flex items-center gap-2"><span class="text-base">🌍</span> 13 languages</li>
+                <li class="flex items-center gap-2"><span class="text-base">📚</span> Anki CSV + audio</li>
+                <li class="flex items-center gap-2"><span class="text-base">⚡</span> Smart, idempotent generation</li>
+            </ul>
+        </div>
+        <div class="rounded-2xl border border-[#3A4049] bg-[#010409] p-4 shadow-2xl backdrop-blur w-full">
+            <div class="rounded-xl border border-[#3A4049] bg-[#151B23] p-4">
+            <div class="flex items-center justify-between">
+                <pre class="text-xs leading-relaxed text-white flex-1 overflow-x-auto"><code>git clone git@github.com:lorenzpfei/anki-vacation-tts.git</code></pre>
+                <button id="copy-btn" class="ml-3 rounded-md bg-white/10 px-2 py-1 text-xs text-white hover:bg-white/20 transition-colors" title="Copy to clipboard">Copy</button>
+            </div>
+            </div>
+            <p class="mt-3 text-center text-sm text-gray-300">CLI friendly • Anki ready • Production proven</p>
+        </div>
+    </div>
+</section>
+
+<!-- QUICK LANGUAGE GRID -->
+<section class="mx-auto max-w-7xl px-4 py-8">
+    <h2 class="text-2xl font-semibold tracking-tight">Available languages</h2>
+    <p class="mt-1 text-[--muted]">Choose any source → target combination.</p>
+    <div class="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
+        {LANGUAGES.map((l) => (
+            <div class="flex items-center gap-2 rounded-xl border border-gray-200 bg-card px-3 py-2 text-sm shadow-sm hover:bg-gray-50 transition-colors" title={l.label}>
+                <span>{l.flag}</span>
+                <span class="truncate text-[--text-card]">{l.label}</span>
+            </div>
+        ))}
+    </div>
+</section>
+
+<!-- BUILDER -->
+<section id="builder" class="mx-auto max-w-7xl px-4 py-10">
+    <div class="rounded-2xl border border-white/10 bg-white/5 p-6 shadow-xl">
+        <div class="mb-5 flex items-center justify-between gap-3">
+            <h2 class="text-2xl font-semibold tracking-tight">Download your deck</h2>
+            <span class="text-xs text-[--muted]">42 phrases • CSV + Audio ZIP • Ready for Anki</span>
+        </div>
+
+        <form id="deck-form" class="grid gap-4 sm:grid-cols-2">
+            <div>
+                <label for="from" class="mb-1 block text-sm text-[--muted]">Source language</label>
+                <div class="relative">
+                    <select id="from" name="from" class="w-full appearance-none rounded-xl border border-[--border] bg-[--input] px-3 py-3 pr-8 text-[--text] focus:ring-2 focus:ring-[--brand]/50 focus:border-[--brand]/50 focus:outline-none transition-all">
+                        {LANGUAGES.map((l) => (
+                            <option value={l.code} selected={l.code === defaults.from}>{l.flag} {l.label} ({l.code})</option>
+                        ))}
+                    </select>
+                    <span class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[--muted]">▾</span>
+                </div>
+            </div>
+            <div>
+                <label for="to" class="mb-1 block text-sm text-[--muted]">Target language</label>
+                <div class="relative">
+                    <select id="to" name="to" class="w-full appearance-none rounded-xl border border-[--border] bg-[--input] px-3 py-3 pr-8 text-[--text] focus:ring-2 focus:ring-[--brand]/50 focus:border-[--brand]/50 focus:outline-none transition-all">
+                        {LANGUAGES.map((l) => (
+                            <option value={l.code} selected={l.code === defaults.to}>{l.flag} {l.label} ({l.code})</option>
+                        ))}
+                    </select>
+                    <span class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[--muted]">▾</span>
+                </div>
+            </div>
+            <div class="sm:col-span-2">
+                <div class="flex flex-col sm:flex-row gap-3">
+                    <button id="download-csv" type="submit" class="btn btn-primary">📄 Download CSV</button>
+                    <button id="download-audio" type="button" class="btn btn-outline">🎵 Download Audio ZIP</button>
+                </div>
+                <p id="build-note" class="mt-2 text-sm text-[--muted]">
+                    CSV is hosted on GitHub. Audio files are packaged in release ZIPs.
+                </p>
+            </div>
+        </form>
+
+        <div id="status" class="mt-4 hidden rounded-xl border border-white/10 bg-card p-4 text-sm"></div>
+    </div>
+
+    <script define:vars={{ LANGUAGES }}>
+        const form = document.getElementById('deck-form');
+        const csvBtn = document.getElementById('download-csv');
+        const audioBtn = document.getElementById('download-audio');
+        const statusBox = document.getElementById('status');
+
+        // Handle CSV download
+        form?.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const from = /** @type {HTMLSelectElement} */(document.getElementById('from')).value;
+            const to = /** @type {HTMLSelectElement} */(document.getElementById('to')).value;
+
+            if (from === to) {
+                showStatus('Please select two different languages.', 'error');
+                return;
+            }
+
+            // Direct link to GitHub CSV file
+            const csvUrl = `https://raw.githubusercontent.com/lorenzpfei/anki-vacation-tts/main/generator/output/decks/${from}-${to}/anki_deck.csv`;
+
+            csvBtn.disabled = true;
+            csvBtn.textContent = '⏳ Downloading...';
+
+            try {
+                // Download CSV file
+                const a = document.createElement('a');
+                a.href = csvUrl;
+                a.download = `anki-deck_${from}-${to}.csv`;
+                a.target = '_blank';
+                a.rel = 'noopener noreferrer';
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+
+                showStatus(`CSV downloaded for ${from} → ${to}! Don't forget to download the audio ZIP.`, 'ok');
+            } catch (err) {
+                showStatus('CSV download failed. The deck might not exist yet.', 'error');
+            } finally {
+                csvBtn.disabled = false;
+                csvBtn.textContent = '📄 Download CSV';
+            }
+        });
+
+        // Handle audio ZIP download
+        audioBtn?.addEventListener('click', () => {
+            const from = /** @type {HTMLSelectElement} */(document.getElementById('from')).value;
+            const to = /** @type {HTMLSelectElement} */(document.getElementById('to')).value;
+
+            if (from === to) {
+                showStatus('Please select two different languages.', 'error');
+                return;
+            }
+
+            // Build the audio ZIP URL dynamically
+            const targetLang = LANGUAGES.find(lang => lang.code === to);
+            if (targetLang) {
+                // Build the GitHub raw URL for the audio ZIP file
+                const audioZipUrl = `https://raw.githubusercontent.com/lorenzpfei/anki-vacation-tts/main/generator/output/audio/audio-${to}.zip`;
+                window.open(audioZipUrl, '_blank', 'noopener,noreferrer');
+                showStatus(`Downloading audio ZIP for ${targetLang.label}.`, 'ok');
+            } else {
+                showStatus('Language not found.', 'error');
+            }
+        });
+
+        // Handle copy button
+        const copyBtn = document.getElementById('copy-btn');
+        copyBtn?.addEventListener('click', () => {
+            const gitCommand = 'git clone git@github.com:lorenzpfei/anki-vacation-tts.git';
+            navigator.clipboard.writeText(gitCommand).then(() => {
+                copyBtn.textContent = 'Copied!';
+                setTimeout(() => {
+                    copyBtn.textContent = 'Copy';
+                }, 2000);
+            }).catch(() => {
+                copyBtn.textContent = 'Failed';
+                setTimeout(() => {
+                    copyBtn.textContent = 'Copy';
+                }, 2000);
+            });
+        });
+
+        function showStatus(msg, type) {
+            statusBox.classList.remove('hidden');
+            statusBox.textContent = msg;
+            statusBox.className = `mt-4 rounded-xl border p-4 text-sm ${type === 'ok' ? 'border-emerald-400/30 bg-emerald-400/10 text-emerald-700' : 'border-rose-400/30 bg-rose-400/10 text-rose-700'}`;
+        }
+    </script>
+</section>
+
+<!-- FEATURES -->
+<section class="mx-auto max-w-7xl px-4 py-12">
+    <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        <article class="feature">
+            <div class="feature-icon">🎙️</div>
+            <h3 class="feature-title">High‑Quality TTS</h3>
+            <p class="feature-copy">Google Neural2 voices, with Azure fallback where needed for quality coverage.</p>
+        </article>
+        <article class="feature">
+            <div class="feature-icon">🌍</div>
+            <h3 class="feature-title">13 Languages</h3>
+            <p class="feature-copy">Authentic, colloquial phrases across 13 locales. Learn what locals actually say.</p>
+        </article>
+        <article class="feature">
+            <div class="feature-icon">📚</div>
+            <h3 class="feature-title">Anki‑ready</h3>
+            <p class="feature-copy">Seven‑column CSV with full + simplified IPA, and audio in semantic filenames.</p>
+        </article>
+        <article class="feature">
+            <div class="feature-icon">⚡</div>
+            <h3 class="feature-title">Smart Generation</h3>
+            <p class="feature-copy">Skips existing files, handles errors gracefully, and supports bulk modes.</p>
+        </article>
+    </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="mx-auto max-w-7xl px-4 py-8">
+    <h2 class="text-2xl font-semibold tracking-tight">How it works</h2>
+    <ol class="mt-6 grid gap-4 sm:grid-cols-3">
+        <li class="step">
+            <div class="step-num">1</div>
+            <h4 class="step-title">Pick languages</h4>
+            <p class="step-copy">Choose source and target. Any pair works.</p>
+        </li>
+        <li class="step">
+            <div class="step-num">2</div>
+            <h4 class="step-title">Download</h4>
+            <p class="step-copy">Download audio mp3s and <code>anki_deck.csv</code>.</p>
+        </li>
+        <li class="step">
+            <div class="step-num">3</div>
+            <h4 class="step-title">Import to Anki</h4>
+            <p class="step-copy">Drop audio in <code>collection.media</code>, import CSV, study.</p>
+        </li>
+    </ol>
+    <div class="mt-6">
+        <a href="#builder" class="btn btn-primary">Build my deck →</a>
+    </div>
+</section>
+
+<!-- FAQ -->
+<section class="mx-auto max-w-5xl px-4 py-12">
+    <h2 class="text-2xl font-semibold tracking-tight">FAQ</h2>
+    <div class="mt-6 divide-y divide-gray-200 rounded-2xl border border-gray-200 bg-card shadow-lg">
+        <details class="group p-4">
+            <summary class="cursor-pointer list-none font-medium text-[--text-card]">Where do the voices come from?</summary>
+            <p class="mt-2 text-[--muted-card]">Google Cloud TTS Neural2 is preferred, with Azure Speech as a fallback. Configure credentials via <code>.env</code>.</p>
+        </details>
+        <details class="group p-4">
+            <summary class="cursor-pointer list-none font-medium text-[--text-card]">Can I add a new language?</summary>
+            <p class="mt-2 text-[--muted-card]">Yes. Follow the project's <em>Adding New Languages</em> guide, create <code>languages/&lt;deck&gt;.js</code>, then register in <code>data.js</code>.</p>
+        </details>
+    </div>
+</section>
+
+<footer class="mx-auto max-w-7xl px-4 py-12">
+    <div class="rounded-2xl border border-white/10 bg-card p-6">
+        <div class="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
+            <p class="text-sm text-[--muted]">Made for travelers. MIT Licensed.</p>
+            <div class="flex gap-2">
+                <a href={repoUrl} class="btn btn-ghost">GitHub</a>
+                <a href="#builder" class="btn btn-primary">Build a deck</a>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- Utility classes powered by Tailwind v4 & global.css theme tokens -->
+<style is:global>
+    @reference "../styles/global.css";
+    .btn{ @apply inline-flex items-center gap-2 rounded-xl border px-4 py-2 text-sm font-medium shadow-sm transition-all no-underline; }
+    .btn-primary{ @apply border-transparent bg-emerald-500 text-white hover:bg-emerald-600; }
+    .btn-outline{ @apply border-white/20 bg-transparent text-[--text] hover:bg-white/5 hover:border-emerald-500/50; }
+    .btn-ghost{ @apply border-transparent bg-gray-900 text-white hover:bg-gray-800; }
+    .feature{ @apply rounded-2xl border border-gray-200 bg-card p-5 shadow-sm hover:shadow-lg transition-shadow; }
+    .feature-icon{ @apply mb-2 text-2xl; }
+    .feature-title{ @apply text-base font-semibold text-[--text-card]; }
+    .feature-copy{ @apply text-sm text-[--muted-card]; }
+    .step{ @apply rounded-2xl border border-white/10 bg-card p-5 shadow-sm; }
+    .step-num{ @apply grid h-8 w-8 place-items-center rounded-full bg-emerald-500/20 text-emerald-400 font-semibold; }
+    .step-title{ @apply mt-2 text-base font-semibold text-[--text-card]; }
+    .step-copy{ @apply text-sm text-[--muted-card]; }
+</style>
+</body>
+</html>
