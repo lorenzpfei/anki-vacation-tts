@@ -1,6 +1,10 @@
 # Anki Vacation TTS Generator
 
-A Node.js tool that generates audio files from text phrases using Google Cloud Text-to-Speech API and Azure Cognitive Services, creating CSV files ready for import into Anki flashcard decks.
+**Learn only what you actually need for your vacation abroad!**
+
+This Node.js tool generates audio flashcards for essential travel phrases - no unnecessary vocabulary or complex grammar that typical language learning apps force on you. Focus on authentic, colloquial expressions that locals actually use in real situations like restaurants, shops, and emergencies.
+
+Perfect for travelers who want to learn practical communication basics before visiting a new country, without wasting time on academic language that won't help you order coffee or ask for directions.
 
 ## 🚀 Features
 
@@ -173,12 +177,94 @@ Source;Target;Audio;Source Notes;Target Notes
 
 ## 🔧 Adding New Languages
 
-Use the provided [prompt](Prompt.md) with AI tools to generate new language files with authentic, colloquial phrases following the existing structure and cultural authenticity requirements.
+### Step 1: Choose Your Language & Voice
 
-### Voices:
+1. **Research Available Voices:**
+   - First check [Google Cloud TTS voices](https://cloud.google.com/text-to-speech/docs/list-voices-and-types) for Neural2 voices
+   - If not available, check [Azure Speech voices](https://learn.microsoft.com/en-gb/azure/ai-services/speech-service/language-support?tabs=tts) for Neural voices
+   - Prefer **male voices** and **premium quality** (Neural2 > WaveNet > Standard)
 
-- **Google**: [Supported voices and languages](https://cloud.google.com/text-to-speech/docs/list-voices-and-types)
-- **Azure**: [Supported voices and languages](https://learn.microsoft.com/en-gb/azure/ai-services/speech-service/language-support?tabs=tts)
+2. **Determine Language Code:**
+   - Use ISO format: `language-COUNTRY` (e.g., `tr-TR` for Turkish Turkey)
+   - Create deck code: Remove hyphens and capitalize (e.g., `trTR`)
+
+### Step 2: Generate Language File Using AI
+
+1. **Use the AI Prompt:**
+   - Open [Prompt.md](Prompt.md) and copy the entire content
+   - Replace `[LANGUAGE_NAME]` and `[REGION]` with your target language/region
+   - Paste into Claude or ChatGPT and follow the instructions
+
+2. **Focus Areas for Authenticity:**
+   - **Formality level**: How locals actually greet strangers vs friends
+   - **Common expressions**: Regional variants and colloquialisms
+   - **Cultural context**: Payment customs, social norms, emergency protocols
+   - **Gendered language**: Add notes for masculine/feminine variants
+
+### Step 3: Create Language File
+
+1. **Save the generated code** as `languages/[DECK_CODE].js` (e.g., `languages/trTR.js`)
+2. **Validate the structure** matches existing language files:
+   - Correct import statement
+   - All 42 required PhraseKeys included
+   - Proper voice configuration
+   - Cultural authenticity notes where needed
+
+### Step 4: Register the Language
+
+Add your new language to `data.js`:
+
+```javascript
+import { trTR } from './languages/trTR.js'; // Add import
+
+export const decks = {
+  // ... existing languages
+  trTR,  // Add to decks object
+};
+```
+
+### Step 5: Test Your Language
+
+1. **Test audio generation:**
+   ```bash
+   node generate.js enUS trTR  # English to Turkish
+   ```
+
+2. **Verify output:**
+   - Audio files created in `output/audio/trTR/`
+   - CSV generated with proper formatting
+   - Listen to audio samples for quality
+
+### Step 6: Update Documentation
+
+1. **Add to language table** in README (alphabetically by language name)
+2. **Add authenticity notes** in the Language Authenticity section
+3. **Test a few deck combinations** to ensure everything works
+
+### Example: Adding Turkish
+
+```javascript
+// languages/trTR.js
+export const trTR = {
+  provider: 'google',
+  langCode: 'tr-TR', 
+  voice: {
+    name: 'tr-TR-WaveNet-B',
+    ssmlGender: 'MALE',
+  },
+  phrases: [
+    { key: PhraseKeys.GREETING_HELLO, text: 'Merhaba!' },
+    { key: PhraseKeys.POLITENESS_THANK_YOU, text: 'Teşekkürler!' },
+    // ... all 42 required phrases
+  ],
+};
+```
+
+### Voice Provider Guidelines:
+
+- **Google Cloud TTS**: Default choice, excellent Neural2 voices
+- **Azure Speech**: Use when Google doesn't support the language well
+- **Set provider field**: `'google'` or `'azure'` in language object
 
 ## 🌟 Language Authenticity
 
