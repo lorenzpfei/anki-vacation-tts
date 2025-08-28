@@ -1,0 +1,7 @@
+{
+	"dependencies": {
+		"@google-cloud/text-to-speech": "^6.2.0",
+		"dotenv": "^17.2.1",
+		"microsoft-cognitiveservices-speech-sdk": "^1.45.0"
+	}
+}
