@@ -15,10 +15,19 @@ Perfect for travelers who want to learn practical communication basics before vi
 - 🎯 **Semantic File Names**: Audio files named by meaning (e.g., `GREETING_HELLO.mp3`)
 - ⚡ **Smart Generation**: Skips existing files, robust error handling
 
+## 🧠 Why Anki works (science‑backed)
+
+Anki pairs **active recall** (testing yourself) with **spaced repetition** (reviewing right before you forget) to boost long‑term memory and retention with less time.
+
+- **Active recall** outperforms rereading for durable learning and transfer.
+- **Spaced repetition** schedules optimized intervals to beat the forgetting curve.
+
+References: [BMC Medical Education — Anki users & outcomes](https://pmc.ncbi.nlm.nih.gov/articles/PMC10403443/), [International Journal of Medical Students — Spaced repetition](https://ijms.pitt.edu/IJMS/article/view/1549)
+
 ## 📋 Available Languages (13 languages)
 
 | Code   | Language                 |
-|--------|--------------------------|
+| ------ | ------------------------ |
 | `deDE` | German (Germany)         |
 | `elGR` | Greek (Greece)           |
 | `enGB` | English (United Kingdom) |
@@ -97,7 +106,7 @@ node generate.js --all-to deDE
 # Generate German to ALL languages (bulk generation)
 node generate.js --all-from deDE
 
-# Generate English to ALL languages (bulk generation)  
+# Generate English to ALL languages (bulk generation)
 node generate.js --all-from enUS
 
 # Generate EVERYTHING - all possible combinations (warning: lots of files!)
@@ -121,16 +130,18 @@ node build-audio-zips.js deDE frFR esES
 ```
 
 **What this does:**
+
 - Creates `audio-{languageCode}.zip` files in the `output/audio/` directory
 - Each ZIP contains all MP3 files for that target language
 - **Removes** the original MP3 files after successful compression
 - Perfect for creating release assets or distributing audio files
 
 **Example output:**
+
 ```
 output/audio/
 ├── audio-deDE.zip     # All German audio files
-├── audio-trTR.zip     # All Turkish audio files  
+├── audio-trTR.zip     # All Turkish audio files
 ├── audio-frFR.zip     # All French audio files
 └── ...
 ```
@@ -389,7 +400,7 @@ export const trTR = {
 
 ## 🌟 Language Authenticity
 
-We are focusing on actually used phrases instead of using the ones learned in school. 
+We are focusing on actually used phrases instead of using the ones learned in school.
 The goal is to not immediately sound like a foreigner :D
 
 ---
