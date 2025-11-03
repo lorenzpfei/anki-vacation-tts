@@ -126,7 +126,8 @@ const repoUrl = 'https://github.com/lorenzpfei/anki-vacation-tts';
     </div>
 </section>
 
-<!-- QUICK LANGUAGE GRID -->
+<!-- QUICK LANGUAGE GRID (disabled) -->
+<!--
 <section class="mx-auto max-w-7xl px-4 py-8">
     <h2 class="text-2xl font-semibold tracking-tight">Available languages</h2>
     <p class="mt-1 text-[--muted]">Choose any source → target combination.</p>
@@ -139,13 +140,14 @@ const repoUrl = 'https://github.com/lorenzpfei/anki-vacation-tts';
         ))}
     </div>
 </section>
+-->
 
 <!-- BUILDER -->
 <section id="builder" class="mx-auto max-w-7xl px-4 py-10">
     <div class="rounded-2xl border border-white/10 bg-white/5 p-6 shadow-xl">
         <div class="mb-5 flex items-center justify-between gap-3">
-            <h2 class="text-2xl font-semibold tracking-tight">Download your deck</h2>
-            <span class="text-xs text-[--muted]">42 phrases • CSV + Audio ZIP • Ready for Anki</span>
+            <h2 class="text-2xl font-semibold tracking-tight">Build locally</h2>
+            <span class="text-xs text-[--muted]">Generate unified CSV + audio locally via README instructions</span>
         </div>
 
         <form id="deck-form" class="grid gap-4 sm:grid-cols-2">
@@ -171,6 +173,7 @@ const repoUrl = 'https://github.com/lorenzpfei/anki-vacation-tts';
                     <span class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[--muted]">▾</span>
                 </div>
             </div>
+            <!-- Download buttons disabled
             <div class="sm:col-span-2">
                 <div class="flex flex-col sm:flex-row gap-3">
                     <button id="download-csv" type="submit" class="btn btn-primary">📄 Download CSV</button>
@@ -180,6 +183,7 @@ const repoUrl = 'https://github.com/lorenzpfei/anki-vacation-tts';
                     CSV is hosted on GitHub. Audio files are packaged in release ZIPs.
                 </p>
             </div>
+            -->
         </form>
 
         <div id="status" class="mt-4 hidden rounded-xl border border-white/10 bg-card p-4 text-sm"></div>
@@ -191,64 +195,11 @@ const repoUrl = 'https://github.com/lorenzpfei/anki-vacation-tts';
         const audioBtn = document.getElementById('download-audio');
         const statusBox = document.getElementById('status');
 
-        // Handle CSV download
-        form?.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const from = /** @type {HTMLSelectElement} */(document.getElementById('from')).value;
-            const to = /** @type {HTMLSelectElement} */(document.getElementById('to')).value;
+        // CSV download disabled
+        // form?.addEventListener('submit', async (e) => { /* disabled */ });
 
-            if (from === to) {
-                showStatus('Please select two different languages.', 'error');
-                return;
-            }
-
-            // Direct link to GitHub CSV file
-            const csvUrl = `https://raw.githubusercontent.com/lorenzpfei/anki-vacation-tts/main/generator/output/decks/${from}-${to}/anki_deck.csv`;
-
-            csvBtn.disabled = true;
-            csvBtn.textContent = '⏳ Downloading...';
-
-            try {
-                // Download CSV file
-                const a = document.createElement('a');
-                a.href = csvUrl;
-                a.download = `anki-deck_${from}-${to}.csv`;
-                a.target = '_blank';
-                a.rel = 'noopener noreferrer';
-                document.body.appendChild(a);
-                a.click();
-                a.remove();
-
-                showStatus(`CSV downloaded for ${from} → ${to}! Don't forget to download the audio ZIP.`, 'ok');
-            } catch (err) {
-                showStatus('CSV download failed. The deck might not exist yet.', 'error');
-            } finally {
-                csvBtn.disabled = false;
-                csvBtn.textContent = '📄 Download CSV';
-            }
-        });
-
-        // Handle audio ZIP download
-        audioBtn?.addEventListener('click', () => {
-            const from = /** @type {HTMLSelectElement} */(document.getElementById('from')).value;
-            const to = /** @type {HTMLSelectElement} */(document.getElementById('to')).value;
-
-            if (from === to) {
-                showStatus('Please select two different languages.', 'error');
-                return;
-            }
-
-            // Build the audio ZIP URL dynamically
-            const targetLang = LANGUAGES.find(lang => lang.code === to);
-            if (targetLang) {
-                // Build the GitHub raw URL for the audio ZIP file
-                const audioZipUrl = `https://raw.githubusercontent.com/lorenzpfei/anki-vacation-tts/main/generator/output/audio/audio-${to}.zip`;
-                window.open(audioZipUrl, '_blank', 'noopener,noreferrer');
-                showStatus(`Downloading audio ZIP for ${targetLang.label}.`, 'ok');
-            } else {
-                showStatus('Language not found.', 'error');
-            }
-        });
+        // Audio ZIP download disabled
+        // audioBtn?.addEventListener('click', () => { /* disabled */ });
 
         // Handle copy button
         const copyBtn = document.getElementById('copy-btn');

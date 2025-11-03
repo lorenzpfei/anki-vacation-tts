@@ -49,7 +49,10 @@ function showUsage() {
     console.log('=====================\n');
     console.log('Usage:');
     console.log(
-        '  node generate.js <source_deck> <target_deck>     # Generate single deck pair'
+        '  node generate.js <source_deck> <target_deck>     # Legacy: separate decks'
+    );
+    console.log(
+        '  node generate.js <pair_deck>                     # New: single pair deck (e.g., deDE-trTR)'
     );
     console.log(
         '  node generate.js --all-to <target_deck>          # Generate all sources to target'
@@ -77,9 +80,13 @@ function showUsage() {
     console.log('Available decks:');
     Object.keys(decks).forEach(deckName => {
         const deck = decks[deckName];
-        console.log(
-            `  • ${deckName} (${deck.langCode}, ${deck.phrases.length} phrases)`
-        );
+        const lang = deck.langCode || deck.targetLang || '-';
+        const count = Array.isArray(deck.phrases)
+            ? deck.phrases.length
+            : Array.isArray(deck.cards)
+              ? deck.cards.length
+              : 0;
+        console.log(`  • ${deckName} (${lang}, ${count} items)`);
     });
     console.log('\nExamples:');
     console.log('  node generate.js deDE sqAL           # German to Albanian');
@@ -182,6 +189,229 @@ async function generateAudio(text, voice, langCode, outputPath) {
     }
 }
 
+function concatNonEmpty(parts) {
+    return parts
+        .filter(p => typeof p === 'string' && p.trim().length > 0)
+        .join(' | ');
+}
+
+function escapeCsv(value) {
+    const s = value || '';
+    return s.replace(/"/g, '""');
+}
+
+async function generateRitualsCSV(ritualCards, outputPath, targetDeckName) {
+    if (!ritualCards || ritualCards.length === 0) {
+        return;
+    }
+
+    const header =
+        'Cue_L1;Context_L1;Call_L2;Call_Pronunciation_IPA;Call_Pronunciation_Simple;Call_Meaning_L1;Call_Literal_L1;Call_Usage_L1;Resp_L2;Resp_Pronunciation_IPA;Resp_Pronunciation_Simple;Resp_Meaning_L1;Notes_L1;Audio_Call;Audio_Resp\n';
+
+    const rows = ritualCards
+        .map(card => {
+            const cue = escapeCsv(card.cue_L1 || '');
+            const context = escapeCsv(card.context_L1 || '');
+            const callL2 = escapeCsv(card.call_l2 || '');
+            const callIPA = escapeCsv(card.call_pronunciation_ipa || '');
+            const callSimple = escapeCsv(card.call_pronunciation_simple || '');
+            const callMeaning = escapeCsv(card.call_meaning_L1 || '');
+            const callLiteral = escapeCsv(card.call_literal_L1 || '');
+            const callUsage = escapeCsv(card.call_usage_L1 || '');
+            const respL2 = escapeCsv(card.response_l2 || '');
+            const respIPA = escapeCsv(card.response_pronunciation_ipa || '');
+            const respSimple = escapeCsv(
+                card.response_pronunciation_simple || ''
+            );
+            const respMeaning = escapeCsv(card.response_meaning_L1 || '');
+            const notes = escapeCsv(card.notes_L1 || '');
+            const audioCall = `[sound:${targetDeckName}_${card.id}__call.mp3]`;
+            const audioResp = `[sound:${targetDeckName}_${card.id}__response.mp3]`;
+
+            return `"${cue}";"${context}";"${callL2}";"${callIPA}";"${callSimple}";"${callMeaning}";"${callLiteral}";"${callUsage}";"${respL2}";"${respIPA}";"${respSimple}";"${respMeaning}";"${notes}";"${audioCall}";"${audioResp}"`;
+        })
+        .join('\n');
+
+    const content = header + rows;
+    await fs.promises.writeFile(outputPath, content, 'utf8');
+}
+
+async function generateUnifiedCSV(deck, outputPath, targetDeckName) {
+    if (!isNewDeckFormat(deck)) return;
+
+    const header =
+        'Cue_L1;Context_L1;L2;Pron_IPA;Pron_Simple;Meaning_L1;Literal_L1;Usage_L1;VarPlural_L2;VarPlural_IPA;VarPlural_Simple;Resp_L2;Resp_Pron_IPA;Resp_Pron_Simple;Resp_Meaning_L1;Notes_L1;Audio_L2;Audio_VarPlural;Audio_Resp;Tags\n';
+
+    const rows = (deck.cards || [])
+        .map(card => {
+            const isSingle = card.type === 'single';
+            const isRitual = card.type === 'ritual_pair';
+
+            const Cue_L1 = escapeCsv(card.cue_L1 || '');
+            const Context_L1 = escapeCsv(card.context_L1 || '');
+            const Notes_L1 = escapeCsv(card.notes_L1 || '');
+
+            const L2 = escapeCsv(isSingle ? card.l2 || '' : card.call_l2 || '');
+            const Pron_IPA = escapeCsv(
+                isSingle
+                    ? card.pronunciation_ipa || ''
+                    : card.call_pronunciation_ipa || ''
+            );
+            const Pron_Simple = escapeCsv(
+                isSingle
+                    ? card.pronunciation_simple || ''
+                    : card.call_pronunciation_simple || ''
+            );
+            const Meaning_L1 = escapeCsv(
+                isSingle ? card.meaning_L1 || '' : card.call_meaning_L1 || ''
+            );
+            const Literal_L1 = escapeCsv(
+                isSingle ? card.literal_L1 || '' : card.call_literal_L1 || ''
+            );
+            const Usage_L1 = escapeCsv(
+                isSingle ? card.usage_L1 || '' : card.call_usage_L1 || ''
+            );
+
+            const VarPlural_L2 = escapeCsv(
+                isSingle && card.variant_plural
+                    ? card.variant_plural.l2 || ''
+                    : ''
+            );
+            const VarPlural_IPA = escapeCsv(
+                isSingle && card.variant_plural
+                    ? card.variant_plural.pronunciation_ipa || ''
+                    : ''
+            );
+            const VarPlural_Simple = escapeCsv(
+                isSingle && card.variant_plural
+                    ? card.variant_plural.pronunciation_simple || ''
+                    : ''
+            );
+
+            const Resp_L2 = escapeCsv(isRitual ? card.response_l2 || '' : '');
+            const Resp_Pron_IPA = escapeCsv(
+                isRitual ? card.response_pronunciation_ipa || '' : ''
+            );
+            const Resp_Pron_Simple = escapeCsv(
+                isRitual ? card.response_pronunciation_simple || '' : ''
+            );
+            const Resp_Meaning_L1 = escapeCsv(
+                isRitual ? card.response_meaning_L1 || '' : ''
+            );
+
+            const audioBase = `${targetDeckName}_${card.id}`;
+            const Audio_L2 = isSingle
+                ? `[sound:${audioBase}.mp3]`
+                : `[sound:${audioBase}__call.mp3]`;
+            const Audio_VarPlural =
+                isSingle && card.variant_plural
+                    ? `[sound:${audioBase}__plural.mp3]`
+                    : '';
+            const Audio_Resp = isRitual
+                ? `[sound:${audioBase}__response.mp3]`
+                : '';
+
+            const Tags = escapeCsv(
+                [
+                    `lang:${deck.targetLang || deck.langCode || ''}`,
+                    `L1:${deck.learnerLang || ''}`,
+                    `cat:${card.category || ''}`,
+                    `type:${card.type || ''}`,
+                ].join(' ')
+            );
+
+            return `"${Cue_L1}";"${Context_L1}";"${L2}";"${Pron_IPA}";"${Pron_Simple}";"${Meaning_L1}";"${Literal_L1}";"${Usage_L1}";"${VarPlural_L2}";"${VarPlural_IPA}";"${VarPlural_Simple}";"${Resp_L2}";"${Resp_Pron_IPA}";"${Resp_Pron_Simple}";"${Resp_Meaning_L1}";"${Notes_L1}";"${Audio_L2}";"${Audio_VarPlural}";"${Audio_Resp}";"${Tags}"`;
+        })
+        .join('\n');
+
+    const content = header + rows;
+    await fs.promises.writeFile(outputPath, content, 'utf8');
+}
+
+function isNewDeckFormat(deck) {
+    return Array.isArray(deck.cards);
+}
+
+function flattenDeckEntries(deck, sourceDeckName) {
+    // Returns a normalized list of entries to generate audio and CSV rows from
+    // Each entry: { id, text, ipa, simple, source, sourceNotes, targetNotes }
+    const entries = [];
+
+    if (!isNewDeckFormat(deck)) {
+        // Legacy deck with phrases[] and PhraseKeys
+        const sourceDeck = decks[sourceDeckName];
+        for (const phrase of deck.phrases) {
+            const sourcePhrase = sourceDeck
+                ? (sourceDeck.phrases || []).find(p => p.key === phrase.key)
+                : null;
+
+            entries.push({
+                id: phrase.key,
+                text: phrase.text,
+                ipa: phrase.pronunciation_ipa || '',
+                simple: phrase.pronunciation_simple || '',
+                source: sourcePhrase ? sourcePhrase.text : '',
+                sourceNotes:
+                    sourcePhrase && sourcePhrase.note ? sourcePhrase.note : '',
+                targetNotes: phrase.note || '',
+            });
+        }
+        return entries;
+    }
+
+    // New flexible deck with cards[]
+    for (const card of deck.cards) {
+        if (card.type === 'single') {
+            entries.push({
+                id: card.id,
+                text: card.l2,
+                ipa: card.pronunciation_ipa || '',
+                simple: card.pronunciation_simple || '',
+                source: card.cue_L1,
+                sourceNotes: card.context_L1 || '',
+                targetNotes: concatNonEmpty([
+                    card.usage_L1 || '',
+                    card.notes_L1 || '',
+                ]),
+            });
+
+            if (card.variant_plural) {
+                entries.push({
+                    id: `${card.id}__plural`,
+                    text: card.variant_plural.l2,
+                    ipa: card.variant_plural.pronunciation_ipa || '',
+                    simple: card.variant_plural.pronunciation_simple || '',
+                    source: `${card.cue_L1} (polite/plural)`,
+                    sourceNotes: card.context_L1 || '',
+                    targetNotes: card.usage_L1 || '',
+                });
+            }
+        } else if (card.type === 'ritual_pair') {
+            entries.push({
+                id: `${card.id}__call`,
+                text: card.call_l2,
+                ipa: card.call_pronunciation_ipa || '',
+                simple: card.call_pronunciation_simple || '',
+                source: `${card.cue_L1} (call)`,
+                sourceNotes: card.context_L1 || '',
+                targetNotes: card.call_usage_L1 || '',
+            });
+
+            entries.push({
+                id: `${card.id}__response`,
+                text: card.response_l2,
+                ipa: card.response_pronunciation_ipa || '',
+                simple: card.response_pronunciation_simple || '',
+                source: `${card.cue_L1} (response)`,
+                sourceNotes: card.context_L1 || '',
+                targetNotes: card.notes_L1 || '',
+            });
+        }
+    }
+
+    return entries;
+}
+
 function findSourcePhrase(targetKey, sourceDeckName = 'deDE') {
     const sourceDeck = decks[sourceDeckName];
     if (!sourceDeck) return null;
@@ -189,42 +419,32 @@ function findSourcePhrase(targetKey, sourceDeckName = 'deDE') {
     return sourceDeck.phrases.find(phrase => phrase.key === targetKey) || null;
 }
 
-async function generateCSV(
-    phrases,
-    outputPath,
-    sourceDeckName,
-    targetDeckName
-) {
+async function generateCSV(entries, outputPath, targetDeckName) {
     try {
         const csvHeader =
             'Source;Target;Audio;Pronunciation (IPA);Pronunciation (Simplified);Source Notes;Target Notes\n';
-        const csvRows = phrases
-            .map(phrase => {
-                const sourcePhrase = findSourcePhrase(
-                    phrase.key,
-                    sourceDeckName
-                );
-                const sourceText = sourcePhrase ? sourcePhrase.text : '';
-                const sourceNotes =
-                    sourcePhrase && sourcePhrase.note ? sourcePhrase.note : '';
-                const targetNotes = phrase.note || '';
-                const pronunciationSimple = phrase.pronunciation_simple || '';
-                const pronunciationIPA = phrase.pronunciation_ipa || '';
-
-                const escapedSource = sourceText.replace(/"/g, '""');
-                const escapedTarget = phrase.text.replace(/"/g, '""');
-                const escapedPronunciationSimple = pronunciationSimple.replace(
+        const csvRows = entries
+            .map(entry => {
+                const escapedSource = (entry.source || '').replace(/"/g, '""');
+                const escapedTarget = (entry.text || '').replace(/"/g, '""');
+                const escapedPronunciationSimple = (entry.simple || '').replace(
                     /"/g,
                     '""'
                 );
-                const escapedPronunciationIPA = pronunciationIPA.replace(
+                const escapedPronunciationIPA = (entry.ipa || '').replace(
                     /"/g,
                     '""'
                 );
-                const escapedSourceNotes = sourceNotes.replace(/"/g, '""');
-                const escapedTargetNotes = targetNotes.replace(/"/g, '""');
+                const escapedSourceNotes = (entry.sourceNotes || '').replace(
+                    /"/g,
+                    '""'
+                );
+                const escapedTargetNotes = (entry.targetNotes || '').replace(
+                    /"/g,
+                    '""'
+                );
 
-                return `"${escapedSource}";"${escapedTarget}";[sound:${targetDeckName}_${phrase.key}.mp3];"${escapedPronunciationIPA}";"${escapedPronunciationSimple}";"${escapedSourceNotes}";"${escapedTargetNotes}"`;
+                return `"${escapedSource}";"${escapedTarget}";[sound:${targetDeckName}_${entry.id}.mp3];"${escapedPronunciationIPA}";"${escapedPronunciationSimple}";"${escapedSourceNotes}";"${escapedTargetNotes}"`;
             })
             .join('\n');
 
@@ -251,20 +471,32 @@ async function processDeck(sourceDeckName, targetDeckName) {
         process.exit(1);
     }
 
-    console.log(`\n🎯 Processing deck: ${sourceDeckName} → ${targetDeckName}`);
-    console.log(`📍 Target language: ${deck.langCode}`);
-    console.log(
-        `📍 Source language: ${sourceDeck.langCode} (${sourceDeckName})`
-    );
-    console.log(`🎤 Voice: ${deck.voice.name} (${deck.voice.ssmlGender})`);
-    console.log(`📝 Number of phrases: ${deck.phrases.length}\n`);
+    const targetLangCode = deck.langCode || deck.targetLang;
+    const provider =
+        deck.provider || (deck.voice && deck.voice.provider) || 'google';
 
-    const outputDir = path.join(
-        __dirname,
-        'output',
-        'decks',
-        `${sourceDeckName}-${targetDeckName}`
-    );
+    console.log(`\n🎯 Processing deck: ${sourceDeckName} → ${targetDeckName}`);
+    console.log(`📍 Target language: ${targetLangCode}`);
+    const isPair = isNewDeckFormat(deck) && !!deck.learnerLang;
+    if (isPair) {
+        console.log(
+            `📍 Source language: ${deck.learnerLang} (${sourceDeckName})`
+        );
+    } else {
+        console.log(
+            `📍 Source language: ${sourceDeck.langCode} (${sourceDeckName})`
+        );
+    }
+    console.log(`🎤 Voice: ${deck.voice.name} (${deck.voice.ssmlGender})`);
+
+    const entries = flattenDeckEntries(deck, sourceDeckName);
+    console.log(`📝 Number of items: ${entries.length}\n`);
+
+    const deckDirName =
+        isNewDeckFormat(deck) && !!deck.learnerLang
+            ? targetDeckName
+            : `${sourceDeckName}-${targetDeckName}`;
+    const outputDir = path.join(__dirname, 'output', 'decks', deckDirName);
     const audioDir = path.join(__dirname, 'output', 'audio');
 
     try {
@@ -275,51 +507,52 @@ async function processDeck(sourceDeckName, targetDeckName) {
         process.exit(1);
     }
 
-    const totalPhrases = deck.phrases.length;
+    const totalItems = entries.length;
     let successCount = 0;
     let errorCount = 0;
 
-    for (let i = 0; i < totalPhrases; i++) {
-        const phrase = deck.phrases[i];
-        const progress = `(${i + 1}/${totalPhrases})`;
+    for (let i = 0; i < totalItems; i++) {
+        const entry = entries[i];
+        const progress = `(${i + 1}/${totalItems})`;
 
-        console.log(`${progress} Generating audio for: "${phrase.text}"`);
+        console.log(`${progress} Generating audio for: "${entry.text}"`);
 
         try {
             const audioPath = path.join(
                 audioDir,
-                `${targetDeckName}_${phrase.key}.mp3`
+                `${targetDeckName}_${entry.id}.mp3`
             );
 
             // Check if file already exists
             if (fs.existsSync(audioPath)) {
                 console.log(
-                    `  ⏭️  Skipping: ${targetDeckName}_${phrase.key}.mp3 (already exists)`
+                    `  ⏭️  Skipping: ${targetDeckName}_${entry.id}.mp3 (already exists)`
                 );
                 successCount++;
                 continue;
             }
 
-            if (deck.voice.provider === 'azure') {
+            const isAzure = provider === 'azure';
+            if (isAzure) {
                 await generateAudioAzure(
-                    phrase.text,
+                    entry.text,
                     deck.voice.name,
                     audioPath
                 );
             } else {
                 await generateAudio(
-                    phrase.text,
+                    entry.text,
                     deck.voice,
-                    deck.langCode,
+                    targetLangCode,
                     audioPath
                 );
             }
 
             successCount++;
-            console.log(`  ✅ Success: ${targetDeckName}_${phrase.key}.mp3`);
+            console.log(`  ✅ Success: ${targetDeckName}_${entry.id}.mp3`);
         } catch (error) {
             errorCount++;
-            console.error(`  ❌ Error with "${phrase.text}": ${error.message}`);
+            console.error(`  ❌ Error with "${entry.text}": ${error.message}`);
         }
     }
 
@@ -329,14 +562,15 @@ async function processDeck(sourceDeckName, targetDeckName) {
 
     if (successCount > 0) {
         try {
-            const csvPath = path.join(outputDir, 'anki_deck.csv');
-            await generateCSV(
-                deck.phrases,
-                csvPath,
-                sourceDeckName,
-                targetDeckName
-            );
-            console.log(`\n📄 CSV file created: ${csvPath}`);
+            if (isNewDeckFormat(deck)) {
+                const unifiedPath = path.join(outputDir, 'anki_unified.csv');
+                await generateUnifiedCSV(deck, unifiedPath, targetDeckName);
+                console.log(`\n📄 CSV file created: ${unifiedPath}`);
+            } else {
+                const csvPath = path.join(outputDir, 'anki_deck.csv');
+                await generateCSV(entries, csvPath, targetDeckName);
+                console.log(`\n📄 CSV file created: ${csvPath}`);
+            }
             console.log(`📁 Audio files in: ${audioDir}`);
             console.log(
                 `\n🎉 Processing of "${sourceDeckName}-${targetDeckName}" completed successfully!`
@@ -354,23 +588,28 @@ async function processDeck(sourceDeckName, targetDeckName) {
 }
 
 function checkEnvironment(deck) {
-    if (!process.env.GOOGLE_API_KEY) {
-        console.error(
-            '\n❌ Error: GOOGLE_API_KEY environment variable not set.'
-        );
-        console.error('Create a .env file with:');
-        console.error('GOOGLE_API_KEY="your_api_key_here"');
+    const provider =
+        (deck && (deck.provider || (deck.voice && deck.voice.provider))) ||
+        'google';
 
-        if (deck && deck.voice.provider === 'azure') {
-            console.error('AZURE_SPEECH_KEY="your_azure_speech_key_here"');
-            console.error('AZURE_SPEECH_REGION="your_azure_region"\n');
-        } else {
-            console.log('\n');
+    if (provider !== 'azure') {
+        if (!process.env.GOOGLE_API_KEY) {
+            console.error(
+                '\n❌ Error: GOOGLE_API_KEY environment variable not set.'
+            );
+            console.error('Create a .env file with:');
+            console.error('GOOGLE_API_KEY="your_api_key_here"');
+            if (provider === 'azure') {
+                console.error('AZURE_SPEECH_KEY="your_azure_speech_key_here"');
+                console.error('AZURE_SPEECH_REGION="your_azure_region"\n');
+            } else {
+                console.log('\n');
+            }
+            process.exit(1);
         }
-        process.exit(1);
     }
 
-    if (deck && deck.voice.provider === 'azure') {
+    if (provider === 'azure') {
         if (!process.env.AZURE_SPEECH_KEY || !process.env.AZURE_SPEECH_REGION) {
             console.error(
                 '\n❌ Error: Azure TTS environment variables not set.'
@@ -474,7 +713,9 @@ async function generateAllFromSource(sourceDeckName) {
             `\n┌─ Processing ${i + 1}/${allTargetDecks.length}: ${sourceDeckName} → ${targetDeckName} ─┐`
         );
         console.log(`│ Target: ${targetDeck.langCode} (${targetDeckName})`);
-        console.log(`│ Voice: ${targetDeck.voice.name} (${targetDeck.voice.ssmlGender})`);
+        console.log(
+            `│ Voice: ${targetDeck.voice.name} (${targetDeck.voice.ssmlGender})`
+        );
         console.log(
             `└─────────────────────────────────────────────────────────────┘`
         );
@@ -521,7 +762,9 @@ async function generateAll() {
 
     // Ask for confirmation
     console.log('🤔 This will generate ALL possible language combinations.');
-    console.log('   Are you sure you want to continue? This may take a while...\n');
+    console.log(
+        '   Are you sure you want to continue? This may take a while...\n'
+    );
 
     let successCount = 0;
     let errorCount = 0;
@@ -541,7 +784,9 @@ async function generateAll() {
             );
             console.log(`│ Source: ${sourceDeck.langCode} (${sourceDeckName})`);
             console.log(`│ Target: ${targetDeck.langCode} (${targetDeckName})`);
-            console.log(`│ Voice: ${targetDeck.voice.name} (${targetDeck.voice.ssmlGender})`);
+            console.log(
+                `│ Voice: ${targetDeck.voice.name} (${targetDeck.voice.ssmlGender})`
+            );
             console.log(
                 `└─────────────────────────────────────────────────────────────┘`
             );
@@ -560,7 +805,9 @@ async function generateAll() {
             try {
                 await processDeck(sourceDeckName, targetDeckName);
                 successCount++;
-                console.log(`✅ Completed: ${sourceDeckName} → ${targetDeckName}`);
+                console.log(
+                    `✅ Completed: ${sourceDeckName} → ${targetDeckName}`
+                );
             } catch (error) {
                 errorCount++;
                 console.error(
@@ -574,12 +821,16 @@ async function generateAll() {
     console.log(`📊 Final Results:`);
     console.log(`  ✅ Successful: ${successCount}/${totalCombinations}`);
     console.log(`  ❌ Errors: ${errorCount}/${totalCombinations}`);
-    console.log(`  📈 Success Rate: ${((successCount / totalCombinations) * 100).toFixed(1)}%`);
+    console.log(
+        `  📈 Success Rate: ${((successCount / totalCombinations) * 100).toFixed(1)}%`
+    );
     console.log(`\n📁 All decks saved in: output/decks/`);
     console.log(`🔊 All audio files in: output/audio/`);
-    
+
     if (successCount > 0) {
-        console.log(`\n🎊 You now have ${successCount} complete deck combinations ready for Anki!`);
+        console.log(
+            `\n🎊 You now have ${successCount} complete deck combinations ready for Anki!`
+        );
     }
 }
 
@@ -638,24 +889,40 @@ async function main() {
         return;
     }
 
-    // Regular single deck generation
-    const sourceDeck = firstArg;
-    const targetDeck = secondArg;
-
-    if (!sourceDeck || !targetDeck) {
-        showUsage();
+    // Regular generation: support legacy two-args or new one-arg pair deck
+    if (firstArg && !secondArg && decks[firstArg]) {
+        // Single pair deck mode
+        const pairDeckName = firstArg;
+        const deck = decks[pairDeckName];
+        checkEnvironment(deck);
+        try {
+            await processDeck(pairDeckName, pairDeckName);
+        } catch (error) {
+            console.error(`\n❌ Unexpected error: ${error.message}`);
+            process.exit(1);
+        }
         return;
     }
 
-    const deck = decks[targetDeck];
-    checkEnvironment(deck);
-
-    try {
-        await processDeck(sourceDeck, targetDeck);
-    } catch (error) {
-        console.error(`\n❌ Unexpected error: ${error.message}`);
-        process.exit(1);
+    if (firstArg && secondArg) {
+        const sourceDeck = firstArg;
+        const targetDeck = secondArg;
+        const deck = decks[targetDeck];
+        if (!deck) {
+            showUsage();
+            return;
+        }
+        checkEnvironment(deck);
+        try {
+            await processDeck(sourceDeck, targetDeck);
+        } catch (error) {
+            console.error(`\n❌ Unexpected error: ${error.message}`);
+            process.exit(1);
+        }
+        return;
     }
+
+    showUsage();
 }
 
 main().catch(error => {
