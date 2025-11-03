@@ -1,274 +1,245 @@
-You are an expert linguist and a native speaker of **[LANGUAGE_NAME]** from **[REGION]**. Your task is to create a JavaScript data file for a language-learning application.
+TARGET_LANGUAGE_NAME = "<e.g. German, Turkish, Brazilian Portuguese, Japanese>"
+TARGET_LANG_CODE = "<e.g. de-DE, tr-TR, pt-BR, ja-JP>"
+TARGET_REGION = "<e.g. Berlin, Istanbul, São Paulo, Tokyo>"
 
-The most important goals are **native speaker authenticity** and **pronunciation**. The phrases you provide must reflect how **native speakers actually speak** in everyday, informal situations—not textbook language, and definitely NOT broken language that foreigners might use when learning. You are a native speaker providing perfect, grammatically correct, natural phrases that locals use. Use natural contractions, common colloquialisms, and the most typical ways native speakers ask for things. **EVERY single phrase must include a pronunciation field - no exceptions!**
+LEARNER_LANGUAGE_NAME = "<e.g. German, English>"
+LEARNER_LANG_CODE = "<e.g. de-DE, en-US>"
 
-### Instructions:
+---
 
-1.  **Adopt the Persona:** Act as a native speaker creating a helpful guide for a friend visiting your country. You are teaching them how to speak like a local, not like a struggling language learner.
-2.  **Focus on Native Speaker Simplicity & Authenticity:** For each `PhraseKey`, provide the most natural phrase that **native speakers actually use**. **Never use broken grammar or foreigner-style phrasing.** Use authentic native speech - this might include contractions, slang, or informal grammar that natives naturally use. **Prioritize simple, learnable phrases over complex sentences.** For basic requests like drinks, use the simple word (e.g., "Water" not "Can I get some water please"). Study the `enUS` example below to understand the desired level of casual, real-world language.
-3.  **Essential Requirements:**
-    - **Native Speaker Authentic:** All phrases must be exactly how native speakers actually say them - this includes contractions, slang, and informal grammar that natives use
-    - **Native Speaker Natural:** How would a native speaker actually say this? Not how would a foreigner learning the language say it
-    - **GREETING_GOOD_DAY** should be usable throughout the day, not just morning-specific
-    - **Must include both REQUEST_COFFEE and REQUEST_WATER phrases** - use simple words, not full sentences
-    - **Two types of "please"**: POLITENESS_PLEASE (for "you're welcome"/response) and REQUEST_PLEASE (for asking/requesting)
-    - All phrases must be practical for tourists but spoken like locals
-    - Use the most common, widely-understood version of each phrase
-4.  **Fill out the Template:** Complete the `phrases` array in the JavaScript template. Do not change the `PhraseKeys`.
-5.  **REQUIRED: Add Pronunciations and Notes:**
-    - **EVERY phrase MUST include BOTH `pronunciation_ipa` AND `pronunciation_simple` fields** - this is not optional!
-    - **pronunciation_ipa**: Full IPA notation with all diacritics (e.g., '/ˈhaloː/' for German 'Hallo', '/bɔ̃ˈʒuʁ/' for French 'Bonjour')
-    - **pronunciation_simple**: Simplified IPA using basic symbols and hyphens (e.g., '/ˈha-lo/' for German 'Hallo', '/bon-ˈʒur/' for French 'Bonjour')
-    - If a phrase has an important nuance (e.g., it's informal, or there's a common feminine/masculine variant), add a concise explanation in the optional `note` field.
-6.  **Choose a Voice:**
-    - First, try to find a high-quality, natural-sounding **Neural2** voice from the official **Google Cloud TTS** voice list for your language and region.
-    - **If a suitable Google voice does not exist**, search the **Microsoft Azure TTS** voice list and use a high-quality `Neural` voice from there. If you use Azure, remember to set the `provider` key to `'azure'`.
+## ROLE & GOAL
 
-### Excellent Example (`enUS`):
+You are an expert linguist and a native speaker of the TARGET_LANGUAGE_NAME from TARGET_REGION.
+
+Your learners are native speakers of LEARNER_LANGUAGE_NAME (LEARNER_LANG_CODE).
+
+Your task is to create a **JavaScript data file** that defines a phrase deck for an active-recall language-learning app.
+
+The app will show learners a prompt in LEARNER_LANGUAGE_NAME and ask them to **produce the phrase in the target language**, and then listen to it via TTS.
+
+The three most important goals are:
+
+1. **Native-speaker authenticity** – how people ACTUALLY talk in TARGET_REGION.
+2. **High real-world usefulness** – only phrases that locals really use.
+3. **Reliable pronunciation help** – IPA + simple transcription for every phrase.
+
+---
+
+## GENERAL PHILOSOPHY
+
+1. Real speech, not textbook speech
+    - Always choose what a typical native speaker from TARGET_REGION would really say in that situation.
+    - Do NOT use phrases that are technically correct but feel stiff, old-fashioned, or “tourist textbook”.
+    - Example vibe:
+        - In German, prefer “Hallo” over “Guten Tag” in most contexts.
+        - In Turkish, if people normally say “abi/abla/pardon” to get attention rather than a stiff “Excuse me”-equivalent, you should mirror that kind of natural usage.
+
+2. No useless or unnatural content
+    - Avoid phrases that locals rarely or never use in everyday life.
+    - Avoid super-formal formulas that people almost never say out loud (unless they are genuinely common and useful in TARGET_REGION).
+    - If something is grammatically fine but socially weird, DO NOT include it as a main phrase.
+    - Only include “nice but less frequent” variants if they are **very common and clearly worth knowing**, and briefly explain them in `notes_L1`.
+
+3. Short, learnable, natural
+    - Prefer short, high-frequency forms over long, complex sentences.
+    - If it is natural to just say the item when ordering (“Water.” / “Coffee.”), use that, not a long, overly polite question.
+    - Use contractions, common colloquialisms, and informal grammar where appropriate, as long as they are widely understood and not ultra-niche slang.
+
+4. Context-aware choices
+    - Think in **situations**, not literal translations.
+    - For “Excuse me”, consider: is this about **getting attention**, **passing by**, or **apologizing**? Pick the phrase that locals actually use in that specific context.
+    - For a “Good day” greeting, do NOT force a literal “Good day” if nobody uses it. Use whatever native speakers really say as a general daytime greeting.
+
+---
+
+## CARD DESIGN RULES
+
+The deck consists of **cards** of two types:
+
+- `single` → one main phrase (optionally with its polite/plural variant)
+- `ritual_pair` → a fixed social ritual where a call has a fixed response that must be learned together
+
+VERY IMPORTANT:
+
+1. One card = one phrase (mostly)
+    - A `single` card has exactly one main phrase in the target language.
+    - You MAY attach a **polite/plural variant of the SAME phrase** to that card  
+      (for example, a casual “thank you” vs. its polite/plural version).
+
+2. Ritual pairs
+    - Use `ritual_pair` when there is a **clear call–response ritual** that locals expect, for example:
+        - A “welcome” phrase that expects a specific reply.
+        - A fixed food blessing and its typical answer.
+    - Call and response belong together on one `ritual_pair` card.
+
+3. Do NOT mix different lexemes on one card
+    - Different words/phrases = different cards.
+    - For example: if there are two different common ways to say “thank you”, they should each get their own `single` card (unless one of them is just the polite/plural variant of the other).
+
+4. Active recall
+    - Each card MUST include a **cue in LEARNER_LANGUAGE_NAME** (`cue_L1`) + a short **context explanation** (`context_L1`).
+    - The app will show `cue_L1` on the front and test whether the learner can recall the target-language phrase.
+
+---
+
+## PRONUNCIATION REQUIREMENTS
+
+For **every target-language phrase** (including responses and variants) you MUST provide:
+
+- `pronunciation_ipa`: full IPA transcription, with correct phonemes and stress.
+- `pronunciation_simple`: a simplified transcription using basic Latin letters and hyphens that is easy for LEARNER_LANGUAGE_NAME speakers to read.
+
+No phrase may be missing these fields.
+
+---
+
+## CONTENT DOMAINS TO COVER
+
+Cover at least the following domains with **high-frequency, natural phrases** used in TARGET_REGION:
+
+1. Greetings & Politeness
+    - A casual “hello”.
+    - A general daytime greeting that people genuinely use (not just early-morning, not stiff).
+    - A natural “bye”.
+    - Two “please” functions:
+        - **REQUEST_PLEASE**: used when asking/requesting (e.g. “please” at the end of a request).
+        - **POLITENESS_PLEASE**: used as a response to “thank you” (“You’re welcome”, “No problem”, etc.).
+    - “Thank you”:
+        - At minimum, include the **single most common everyday way** to say “thank you”.
+        - Only add **additional** “thank you” cards if they are clearly very common and have distinct, important usages (e.g. one very casual and one clearly polite/plural form).
+
+2. Cultural ritual phrases
+    - Include any **strong, culture-specific routines** where a particular phrase is tied to a social situation and often has a fixed answer.
+    - Example patterns (adapt to the target language):
+        - welcoming someone arriving → fixed response
+        - wishing someone an easy job/work → typical response
+        - food/blessing formulas (before/after eating) → response
+        - complimenting the cook → response
+        - get-well / empathy phrases → reaction
+        - multi-purpose “here you go / after you / help yourself” phrase → response
+    - Use `ritual_pair` for these call–response routines.
+
+3. Introduction / small talk basics
+    - “My name is …” / “I’m …”
+    - “Nice to meet you.”
+    - “What’s your name?”
+
+4. Communication / language issues
+    - “I don’t understand.”
+    - “Do you speak [TARGET_LANGUAGE / LEARNER_LANGUAGE, whichever is more helpful]?”
+    - “Could you speak more slowly, please?”
+    - A natural way to say “I don’t speak [TARGET_LANGUAGE_NAME] very well.”  
+      (must sound like natives actually say it, not learner-ish).
+    - “How do you say … in [TARGET_LANGUAGE_NAME]?”
+
+5. Food & drink
+    - “Menu, please” (or the natural equivalent).
+    - **Coffee** as people actually order it (often just the item word).
+    - **Water** as people actually order it.
+    - “The bill, please.”
+    - “I’m vegetarian.” or “I don’t eat meat and fish.” or “I don’t eat animals.” – whichever is more natural/useful.
+    - “That was delicious!” (after eating).
+    - “This is really good!” (while eating).
+
+6. Navigation
+    - “Where is the train station?”
+    - “Where is the toilet/bathroom?” (use the everyday term).
+    - “Where is the nearest ATM/cash machine?”
+
+7. Shopping
+    - “How much is this?”
+    - “Can I pay by card?”
+    - “I’d like to pay in cash.”
+
+8. Emergency
+    - Short, urgent “Help!”
+    - “I need a doctor!”
+    - “Call the police!”
+
+9. Numbers 1–10
+    - Provide the normal, most common forms for counting.
+    - If the target language has multiple everyday variants for some numbers (e.g. taboo forms, alternate readings), choose the **safest, most common default** for beginners and optionally explain in `notes_L1` why you chose it.
+
+You do not need a fixed number of cards per domain, but every domain must be **reasonably covered** with high-value, real-life phrases.
+
+---
+
+## OUTPUT FORMAT (JAVASCRIPT MODULE)
+
+Return a single JavaScript module that exports one deck object.
+
+Deck-level structure:
 
 ```javascript
-import { PhraseKeys } from '../types.js';
-
-export const enUS = {
-    provider: 'google',
-    langCode: 'en-US',
+export const deck = {
+    learnerLang: '<LEARNER_LANG_CODE>', // from the settings at the top
+    targetLang: '<TARGET_LANG_CODE>', // from the settings at the top
+    provider: 'google' || 'azure',
     voice: {
-        name: 'en-US-Neural2-D',
-        ssmlGender: 'MALE',
+        name: '...', // e.g. a Google Neural2 or Azure Neural voice for the target language
+        ssmlGender: 'MALE' || 'FEMALE',
     },
-    phrases: [
-        // Greetings & Politeness - American English
-        {
-            key: PhraseKeys.GREETING_HELLO,
-            text: 'Hi!',
-            pronunciation_ipa: '/haɪ/',
-            pronunciation_simple: '/haɪ/',
-        },
-        {
-            key: PhraseKeys.GREETING_GOOD_DAY,
-            text: 'Good morning!',
-            pronunciation_ipa: '/ɡʊd ˈmɔrnɪŋ/',
-            pronunciation_simple: '/gud ˈmor-niŋ/',
-        },
-        {
-            key: PhraseKeys.FAREWELL_BYE,
-            text: 'Bye!',
-            pronunciation_ipa: '/baɪ/',
-            pronunciation_simple: '/baɪ/',
-        },
-        {
-            key: PhraseKeys.POLITENESS_PLEASE,
-            text: "You're welcome",
-            pronunciation_ipa: '/jʊr ˈwɛlkəm/',
-            pronunciation_simple: '/jur ˈwel-kəm/',
-        },
-        {
-            key: PhraseKeys.POLITENESS_THANK_YOU,
-            text: 'Thanks!',
-            pronunciation: 'thanks',
-        },
-        {
-            key: PhraseKeys.POLITENESS_MANY_THANKS,
-            text: 'Thanks so much!',
-            pronunciation: 'thanks so much',
-        },
-        { key: PhraseKeys.CONFIRMATION_YES, text: 'Yes', pronunciation: 'yes' },
-        { key: PhraseKeys.CONFIRMATION_NO, text: 'No', pronunciation: 'no' },
-        {
-            key: PhraseKeys.POLITENESS_EXCUSE_ME,
-            text: 'Excuse me',
-            pronunciation: 'ik-SKYOOZ mee',
-        },
-
-        // Introduction - Meeting people
-        {
-            key: PhraseKeys.INTRODUCTION_MY_NAME,
-            text: 'My name is...',
-            pronunciation: 'my name is',
-        },
-        {
-            key: PhraseKeys.INTRODUCTION_NICE_TO_MEET,
-            text: 'Nice to meet you!',
-            pronunciation: 'nice to meet you',
-        },
-        {
-            key: PhraseKeys.INTRODUCTION_WHATS_YOUR_NAME,
-            text: "What's your name?",
-            pronunciation: 'whats your name',
-        },
-
-        // Communication - Natural American English
-        {
-            key: PhraseKeys.COMMUNICATION_DONT_UNDERSTAND,
-            text: "I don't understand.",
-            pronunciation: 'i dont un-der-STAND',
-        },
-        {
-            key: PhraseKeys.COMMUNICATION_SPEAK_ENGLISH,
-            text: 'Do you speak English?',
-            pronunciation: 'do you speak ING-glish',
-        },
-        {
-            key: PhraseKeys.COMMUNICATION_SPEAK_SLOWER,
-            text: 'Could you speak a little slower, please?',
-        },
-        {
-            key: PhraseKeys.COMMUNICATION_LIMITED_LANGUAGE,
-            text: "I don't speak the language very well.",
-        },
-        {
-            key: PhraseKeys.COMMUNICATION_HOW_DO_YOU_SAY,
-            text: 'How do you say ... in this language?',
-        },
-
-        // Food & Dining - How Americans actually order
-        {
-            key: PhraseKeys.REQUEST_MENU,
-            text: 'Can I get a menu, please?',
-            pronunciation: 'can i get a MEN-yoo pleez',
-        },
-        {
-            key: PhraseKeys.REQUEST_COFFEE,
-            text: 'Coffee',
-            pronunciation_ipa: '/ˈkɔfi/',
-            pronunciation_simple: '/ˈkɔ-fi/',
-        },
-        {
-            key: PhraseKeys.REQUEST_WATER,
-            text: 'Water',
-            pronunciation_ipa: '/ˈwɔtər/',
-            pronunciation_simple: '/ˈwɔ-tər/',
-        },
-        {
-            key: PhraseKeys.REQUEST_PLEASE,
-            text: 'Please',
-            pronunciation_ipa: '/pliz/',
-            pronunciation_simple: '/pliz/',
-        },
-        { key: PhraseKeys.REQUEST_BILL, text: 'Can we get the check, please?' },
-        { key: PhraseKeys.DINING_VEGETARIAN, text: "I'm a vegetarian." },
-        {
-            key: PhraseKeys.DINING_DELICIOUS,
-            text: 'That was delicious!',
-            note: 'after eating',
-        },
-        {
-            key: PhraseKeys.DINING_YUMMY,
-            text: 'This is really good!',
-            note: 'during eating',
-        },
-
-        // Navigation - American style
-        {
-            key: PhraseKeys.NAVIGATION_TRAIN_STATION,
-            text: "Where's the train station?",
-        },
-        { key: PhraseKeys.NAVIGATION_RESTROOM, text: "Where's the restroom?" },
-        { key: PhraseKeys.NAVIGATION_ATM, text: 'Where is the nearest ATM?' },
-
-        // Shopping - Natural American conversation
-        { key: PhraseKeys.SHOPPING_HOW_MUCH, text: 'How much is this?' },
-        {
-            key: PhraseKeys.SHOPPING_PAY_BY_CARD,
-            text: 'Can I pay with a card?',
-        },
-        {
-            key: PhraseKeys.SHOPPING_PAY_BY_CASH,
-            text: "I'd like to pay with cash.",
-        },
-
-        // Emergency - Direct and urgent
-        { key: PhraseKeys.EMERGENCY_HELP, text: 'Help!' },
-        { key: PhraseKeys.EMERGENCY_DOCTOR, text: 'I need a doctor!' },
-        { key: PhraseKeys.EMERGENCY_POLICE, text: 'Call the police!' },
-
-        // Numbers 1-10
-        { key: PhraseKeys.NUMBER_ONE, text: 'one' },
-        { key: PhraseKeys.NUMBER_TWO, text: 'two' },
-        { key: PhraseKeys.NUMBER_THREE, text: 'three' },
-        { key: PhraseKeys.NUMBER_FOUR, text: 'four' },
-        { key: PhraseKeys.NUMBER_FIVE, text: 'five' },
-        { key: PhraseKeys.NUMBER_SIX, text: 'six' },
-        { key: PhraseKeys.NUMBER_SEVEN, text: 'seven' },
-        { key: PhraseKeys.NUMBER_EIGHT, text: 'eight' },
-        { key: PhraseKeys.NUMBER_NINE, text: 'nine' },
-        { key: PhraseKeys.NUMBER_TEN, text: 'ten' },
+    cards: [
+        // cards go here
     ],
 };
 ```
 
-### JavaScript Template to Complete:
+For every target-language phrase (including responses and variants) you MUST provide:
 
-```javascript
-import { PhraseKeys } from '../types.js';
+- `pronunciation_ipa`: full IPA transcription, with correct phonemes and stress, stored as plain IPA text **without** leading or trailing slashes (e.g. `seˈlam`, not `/seˈlam/`).
+- `pronunciation_simple`: a simplified transcription using basic Latin letters and hyphens that is easy for LEARNER_LANGUAGE_NAME speakers to read.
 
-export const /* TODO: variableName e.g., frFR */ = {
-  provider: '/* TODO: google or azure */',
-  langCode: '/* TODO: e.g., fr-FR */',
-  voice: {
-    name: '/* TODO: e.g., fr-FR-Neural2-D */',
-    ssmlGender: '/* TODO: MALE or FEMALE */',
-  },
-  phrases: [
-    // Greetings & Politeness
-    { key: PhraseKeys.GREETING_HELLO, text: '...', pronunciation_ipa: '/.../', pronunciation_simple: '/.../' },
-    { key: PhraseKeys.GREETING_GOOD_DAY, text: '...', pronunciation_ipa: '/.../', pronunciation_simple: '/.../' },
-    { key: PhraseKeys.FAREWELL_BYE, text: '...', pronunciation_ipa: '/.../', pronunciation_simple: '/.../' },
-    { key: PhraseKeys.POLITENESS_PLEASE, text: '...', pronunciation_ipa: '/.../', pronunciation_simple: '/.../' }, // You're welcome
-    { key: PhraseKeys.POLITENESS_THANK_YOU, text: '...', pronunciation: '...' },
-    { key: PhraseKeys.POLITENESS_MANY_THANKS, text: '...', pronunciation: '...' },
-    { key: PhraseKeys.CONFIRMATION_YES, text: '...', pronunciation: '...' },
-    { key: PhraseKeys.CONFIRMATION_NO, text: '...', pronunciation: '...' },
-    { key: PhraseKeys.POLITENESS_EXCUSE_ME, text: '...', pronunciation: '...' },
+## CARD TYPES
 
-    // Introduction
-    { key: PhraseKeys.INTRODUCTION_MY_NAME, text: '...', pronunciation: '...' },
-    { key: PhraseKeys.INTRODUCTION_NICE_TO_MEET, text: '...', pronunciation: '...' },
-    { key: PhraseKeys.INTRODUCTION_WHATS_YOUR_NAME, text: '...', pronunciation: '...' },
+You must use these two shapes:
 
-    // Communication
-    { key: PhraseKeys.COMMUNICATION_DONT_UNDERSTAND, text: '...', pronunciation: '...' },
-    { key: PhraseKeys.COMMUNICATION_SPEAK_ENGLISH, text: '...', pronunciation: '...' },
-    { key: PhraseKeys.COMMUNICATION_SPEAK_SLOWER, text: '...', pronunciation: '...' },
-    { key: PhraseKeys.COMMUNICATION_LIMITED_LANGUAGE, text: '...', pronunciation: '...' }, // Note: Native speaker way to say "I don't speak [LANGUAGE_NAME] very well" - NOT broken learner language!
-    { key: PhraseKeys.COMMUNICATION_HOW_DO_YOU_SAY, text: '...', pronunciation: '...' },
+```typescript
+type SingleCard = {
+    id: string; // stable id, e.g. 'thanks_main', 'hello_casual'
+    type: 'single';
+    category: string; // e.g. 'greeting','thanks','ritual','food','navigation','emergency','number',...
+    cue_L1: string; // prompt in LEARNER_LANGUAGE_NAME, e.g. "Thanks (casual, to friends)"
+    context_L1: string; // one-sentence usage hint in LEARNER_LANGUAGE_NAME
+    l2: string; // target phrase in TARGET_LANGUAGE_NAME
+    pronunciation_ipa: string;
+    pronunciation_simple: string;
+    meaning_L1: string; // idiomatic translation into LEARNER_LANGUAGE_NAME
+    literal_L1?: string; // optional literal translation
+    usage_L1: string; // 1–3 sentences (in LEARNER_LANGUAGE_NAME) explaining when/how it is used
+    variant_plural?: {
+        // OPTIONAL: polite/plural version of the SAME phrase
+        l2: string;
+        pronunciation_ipa: string;
+        pronunciation_simple: string;
+    };
+    notes_L1?: string; // optional: pitfalls, register notes, regional info
+};
 
-    // Food & Dining
-    { key: PhraseKeys.REQUEST_MENU, text: '...', pronunciation: '...' },
-    { key: PhraseKeys.REQUEST_COFFEE, text: '...', pronunciation_ipa: '/.../', pronunciation_simple: '/.../' },
-    { key: PhraseKeys.REQUEST_WATER, text: '...', pronunciation_ipa: '/.../', pronunciation_simple: '/.../' },
-    { key: PhraseKeys.REQUEST_PLEASE, text: '...', pronunciation_ipa: '/.../', pronunciation_simple: '/.../' }, // For requesting things
-    { key: PhraseKeys.REQUEST_BILL, text: '...', pronunciation: '...' },
-    { key: PhraseKeys.DINING_VEGETARIAN, text: '...', pronunciation: '...' },
-    { key: PhraseKeys.DINING_DELICIOUS, text: '...', pronunciation: '...' },
-    { key: PhraseKeys.DINING_YUMMY, text: '...', pronunciation: '...' },
-
-    // Navigation
-    { key: PhraseKeys.NAVIGATION_TRAIN_STATION, text: '...', pronunciation: '...' },
-    { key: PhraseKeys.NAVIGATION_RESTROOM, text: '...', pronunciation: '...' },
-    { key: PhraseKeys.NAVIGATION_ATM, text: '...', pronunciation: '...' },
-
-    // Shopping
-    { key: PhraseKeys.SHOPPING_HOW_MUCH, text: '...', pronunciation: '...' },
-    { key: PhraseKeys.SHOPPING_PAY_BY_CARD, text: '...', pronunciation: '...' },
-    { key: PhraseKeys.SHOPPING_PAY_BY_CASH, text: '...', pronunciation: '...' },
-
-    // Emergency
-    { key: PhraseKeys.EMERGENCY_HELP, text: '...', pronunciation: '...' },
-    { key: PhraseKeys.EMERGENCY_DOCTOR, text: '...', pronunciation: '...' },
-    { key: PhraseKeys.EMERGENCY_POLICE, text: '...', pronunciation: '...' },
-
-    // Numbers 1-10
-    { key: PhraseKeys.NUMBER_ONE, text: '...', pronunciation: '...' },
-    { key: PhraseKeys.NUMBER_TWO, text: '...', pronunciation: '...' },
-    { key: PhraseKeys.NUMBER_THREE, text: '...', pronunciation: '...' },
-    { key: PhraseKeys.NUMBER_FOUR, text: '...', pronunciation: '...' },
-    { key: PhraseKeys.NUMBER_FIVE, text: '...', pronunciation: '...' },
-    { key: PhraseKeys.NUMBER_SIX, text: '...', pronunciation: '...' },
-    { key: PhraseKeys.NUMBER_SEVEN, text: '...', pronunciation: '...' },
-    { key: PhraseKeys.NUMBER_EIGHT, text: '...', pronunciation: '...' },
-    { key: PhraseKeys.NUMBER_NINE, text: '...', pronunciation: '...' },
-    { key: PhraseKeys.NUMBER_TEN, text: '...', pronunciation: '...' },
-  ],
+type RitualPairCard = {
+    id: string; // e.g. 'welcome_ritual'
+    type: 'ritual_pair';
+    category: string; // e.g. 'ritual','greeting_ritual','food_ritual'
+    cue_L1: string; // short situation description in LEARNER_LANGUAGE_NAME
+    context_L1: string; // when this ritual occurs (one sentence)
+    call_l2: string; // the first phrase (what someone says in the ritual)
+    call_pronunciation_ipa: string;
+    call_pronunciation_simple: string;
+    call_meaning_L1: string; // meaning of the call in LEARNER_LANGUAGE_NAME
+    call_literal_L1?: string; // literal translation if helpful
+    call_usage_L1: string; // 1–3 sentences on usage/nuance
+    response_l2: string; // the expected, fixed response phrase
+    response_pronunciation_ipa: string;
+    response_pronunciation_simple: string;
+    response_meaning_L1: string; // meaning of the response in LEARNER_LANGUAGE_NAME
+    notes_L1?: string; // optional notes on the whole ritual
 };
 ```
+
+The cards array is a mixture of `SingleCard` and `RitualPairCard` objects.
+
+Make sure your final cards array:
+
+- covers all the domains listed above,
+- uses only **high-frequency, natural phrases** that locals in TARGET_REGION genuinely use,
+- and provides **IPA + simple pronunciation** for every target-language phrase.
