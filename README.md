@@ -397,8 +397,6 @@ margin-top: 6px; } hr { border: none; border-top: 1px solid #ddd; margin: 10px
 Click `Save / Close`.
 From now on, every CSV you generate can be imported directly into this single note type, and all cards will behave correctly for both speaking and understanding your vacation phrases.
 
-````
-
 ## 🔧 Adding New Pair Decks
 
 ### Step 1: Choose Your Language & Voice
@@ -496,4 +494,3 @@ The goal is to not immediately sound like a foreigner :D
 - **Stable Names**: `[pair]_<cardId>.mp3`, variants `__plural`, rituals `__call`/`__response`
 - **Efficient Storage**: Files are skipped if already present
 - **Smart Generation**: Resilient synthesis with provider-aware config
-````
