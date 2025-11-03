@@ -205,9 +205,6 @@ async function generateRitualsCSV(ritualCards, outputPath, targetDeckName) {
         return;
     }
 
-    const header =
-        'Cue_L1;Context_L1;Call_L2;Call_Pronunciation_IPA;Call_Pronunciation_Simple;Call_Meaning_L1;Call_Literal_L1;Call_Usage_L1;Resp_L2;Resp_Pronunciation_IPA;Resp_Pronunciation_Simple;Resp_Meaning_L1;Notes_L1;Audio_Call;Audio_Resp\n';
-
     const rows = ritualCards
         .map(card => {
             const cue = escapeCsv(card.cue_L1 || '');
@@ -232,15 +229,12 @@ async function generateRitualsCSV(ritualCards, outputPath, targetDeckName) {
         })
         .join('\n');
 
-    const content = header + rows;
+    const content = rows + (rows ? '\n' : '');
     await fs.promises.writeFile(outputPath, content, 'utf8');
 }
 
 async function generateUnifiedCSV(deck, outputPath, targetDeckName) {
     if (!isNewDeckFormat(deck)) return;
-
-    const header =
-        'Cue_L1;Context_L1;L2;Pron_IPA;Pron_Simple;Meaning_L1;Literal_L1;Usage_L1;VarPlural_L2;VarPlural_IPA;VarPlural_Simple;Resp_L2;Resp_Pron_IPA;Resp_Pron_Simple;Resp_Meaning_L1;Notes_L1;Audio_L2;Audio_VarPlural;Audio_Resp;Tags\n';
 
     const rows = (deck.cards || [])
         .map(card => {
@@ -324,7 +318,7 @@ async function generateUnifiedCSV(deck, outputPath, targetDeckName) {
         })
         .join('\n');
 
-    const content = header + rows;
+    const content = rows + (rows ? '\n' : '');
     await fs.promises.writeFile(outputPath, content, 'utf8');
 }
 
@@ -421,8 +415,6 @@ function findSourcePhrase(targetKey, sourceDeckName = 'deDE') {
 
 async function generateCSV(entries, outputPath, targetDeckName) {
     try {
-        const csvHeader =
-            'Source;Target;Audio;Pronunciation (IPA);Pronunciation (Simplified);Source Notes;Target Notes\n';
         const csvRows = entries
             .map(entry => {
                 const escapedSource = (entry.source || '').replace(/"/g, '""');
@@ -448,7 +440,7 @@ async function generateCSV(entries, outputPath, targetDeckName) {
             })
             .join('\n');
 
-        const csvContent = csvHeader + csvRows;
+        const csvContent = csvRows + (csvRows ? '\n' : '');
         await fs.promises.writeFile(outputPath, csvContent, 'utf8');
     } catch (error) {
         throw new Error(`Error creating CSV file: ${error.message}`);

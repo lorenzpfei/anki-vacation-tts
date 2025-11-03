@@ -137,7 +137,7 @@ Cover at least the following domains with **high-frequency, natural phrases** us
     - **Coffee** as people actually order it (often just the item word).
     - **Water** as people actually order it.
     - “The bill, please.”
-    - “I’m vegetarian.” or “I don’t eat meat.” – whichever is more natural/useful.
+    - “I’m vegetarian.” or “I don’t eat meat and fish.” or “I don’t eat animals.” – whichever is more natural/useful.
     - “That was delicious!” (after eating).
     - “This is really good!” (while eating).
 

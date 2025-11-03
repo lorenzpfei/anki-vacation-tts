@@ -56,7 +56,7 @@ const repoUrl = 'https://github.com/lorenzpfei/anki-vacation-tts';
         </a>
         <div class="flex items-center gap-2">
             <a href={repoUrl} class="btn btn-ghost" rel="noopener noreferrer">GitHub</a>
-            <a href="#builder" class="btn btn-primary">Build my deck</a>
+            <a href="#how-it-works" class="btn btn-primary">How it works</a>
         </div>
     </nav>
 </header>
@@ -77,7 +77,7 @@ const repoUrl = 'https://github.com/lorenzpfei/anki-vacation-tts';
                 {tagline} Generate audio flashcards with authentic, colloquial travel phrases, high‑quality TTS, and Anki‑ready CSV—without the fluff.
             </p>
             <div class="mt-6 flex flex-wrap items-center gap-3">
-                <a href="#builder" class="btn btn-primary">Start free →</a>
+                <a href="#how-it-works" class="btn btn-primary">How it works →</a>
                 <a href={repoUrl} class="btn btn-ghost" rel="noopener noreferrer">⭐ Star on GitHub</a>
             </div>
             <ul class="mt-8 grid max-w-xl grid-cols-2 gap-2 text-sm text-[--muted]">
@@ -120,8 +120,8 @@ const repoUrl = 'https://github.com/lorenzpfei/anki-vacation-tts';
         </ul>
         <div class="mt-4 text-xs text-[--muted]">Backed by research: <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC10403443/" target="_blank" rel="noopener noreferrer" class="underline">Anki & outcomes</a>, <a href="https://ijms.pitt.edu/IJMS/article/view/1549" target="_blank" rel="noopener noreferrer" class="underline">spaced repetition</a>.</div>
         <div class="mt-5 flex flex-wrap gap-3">
-            <a href="#builder" class="btn btn-primary">Build a travel deck</a>
-            <a href="#how-it-works" class="btn btn-outline">How it works</a>
+            <a href="#how-it-works" class="btn btn-primary">How it works</a>
+            <a href={repoUrl} class="btn btn-outline" rel="noopener noreferrer">GitHub</a>
         </div>
     </div>
 </section>
@@ -142,89 +142,46 @@ const repoUrl = 'https://github.com/lorenzpfei/anki-vacation-tts';
 </section>
 -->
 
-<!-- BUILDER -->
-<section id="builder" class="mx-auto max-w-7xl px-4 py-10">
+<!-- OVERVIEW / WHY THIS IS DIFFERENT -->
+<section id="overview" class="mx-auto max-w-7xl px-4 py-10">
     <div class="rounded-2xl border border-white/10 bg-white/5 p-6 shadow-xl">
-        <div class="mb-5 flex items-center justify-between gap-3">
-            <h2 class="text-2xl font-semibold tracking-tight">Build locally</h2>
-            <span class="text-xs text-[--muted]">Generate unified CSV + audio locally via README instructions</span>
+        <h2 class="text-2xl font-semibold tracking-tight">Speak like locals. Learn the rituals.</h2>
+        <p class="mt-2 text-sm text-[--muted]">Short, high‑frequency phrases with IPA + simple pronunciation, plus culture‑specific call→response rituals (e.g., “Hoş geldiniz” → “Hoş bulduk”).</p>
+
+        <div class="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <article class="feature">
+                <div class="feature-icon">🗣️</div>
+                <h3 class="feature-title">Authentic phrases</h3>
+                <p class="feature-copy">No textbook filler. Phrases people actually say in cafés, shops, streets, and emergencies.</p>
+            </article>
+            <article class="feature">
+                <div class="feature-icon">🤝</div>
+                <h3 class="feature-title">Ritual pairs</h3>
+                <p class="feature-copy">Learn social rituals as a pair: the call you’ll hear and the fixed response you give.</p>
+            </article>
+            <article class="feature">
+                <div class="feature-icon">🎧</div>
+                <h3 class="feature-title">Pronunciation you can trust</h3>
+                <p class="feature-copy">Every card includes full IPA and an easy version for quick reading.</p>
+            </article>
+            <article class="feature">
+                <div class="feature-icon">🧩</div>
+                <h3 class="feature-title">One note type</h3>
+                <p class="feature-copy">Unified CSV (20 fields) works for both single phrases and ritual pairs in Anki.</p>
+            </article>
+            <article class="feature">
+                <div class="feature-icon">🔊</div>
+                <h3 class="feature-title">Great voices</h3>
+                <p class="feature-copy">Premium Neural TTS (e.g., Azure Emel for Turkish). Configurable per deck.</p>
+            </article>
+            <article class="feature">
+                <div class="feature-icon">🛠️</div>
+                <h3 class="feature-title">Local build</h3>
+                <p class="feature-copy">Generate audio + CSV locally; you control voices, regions, and card content.</p>
+            </article>
         </div>
-
-        <form id="deck-form" class="grid gap-4 sm:grid-cols-2">
-            <div>
-                <label for="from" class="mb-1 block text-sm text-[--muted]">Source language</label>
-                <div class="relative">
-                    <select id="from" name="from" class="w-full appearance-none rounded-xl border border-[--border] bg-[--input] px-3 py-3 pr-8 text-[--text] focus:ring-2 focus:ring-[--brand]/50 focus:border-[--brand]/50 focus:outline-none transition-all">
-                        {LANGUAGES.map((l) => (
-                            <option value={l.code} selected={l.code === defaults.from}>{l.flag} {l.label} ({l.code})</option>
-                        ))}
-                    </select>
-                    <span class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[--muted]">▾</span>
-                </div>
-            </div>
-            <div>
-                <label for="to" class="mb-1 block text-sm text-[--muted]">Target language</label>
-                <div class="relative">
-                    <select id="to" name="to" class="w-full appearance-none rounded-xl border border-[--border] bg-[--input] px-3 py-3 pr-8 text-[--text] focus:ring-2 focus:ring-[--brand]/50 focus:border-[--brand]/50 focus:outline-none transition-all">
-                        {LANGUAGES.map((l) => (
-                            <option value={l.code} selected={l.code === defaults.to}>{l.flag} {l.label} ({l.code})</option>
-                        ))}
-                    </select>
-                    <span class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[--muted]">▾</span>
-                </div>
-            </div>
-            <!-- Download buttons disabled
-            <div class="sm:col-span-2">
-                <div class="flex flex-col sm:flex-row gap-3">
-                    <button id="download-csv" type="submit" class="btn btn-primary">📄 Download CSV</button>
-                    <button id="download-audio" type="button" class="btn btn-outline">🎵 Download Audio ZIP</button>
-                </div>
-                <p id="build-note" class="mt-2 text-sm text-[--muted]">
-                    CSV is hosted on GitHub. Audio files are packaged in release ZIPs.
-                </p>
-            </div>
-            -->
-        </form>
-
-        <div id="status" class="mt-4 hidden rounded-xl border border-white/10 bg-card p-4 text-sm"></div>
     </div>
-
-    <script define:vars={{ LANGUAGES }}>
-        const form = document.getElementById('deck-form');
-        const csvBtn = document.getElementById('download-csv');
-        const audioBtn = document.getElementById('download-audio');
-        const statusBox = document.getElementById('status');
-
-        // CSV download disabled
-        // form?.addEventListener('submit', async (e) => { /* disabled */ });
-
-        // Audio ZIP download disabled
-        // audioBtn?.addEventListener('click', () => { /* disabled */ });
-
-        // Handle copy button
-        const copyBtn = document.getElementById('copy-btn');
-        copyBtn?.addEventListener('click', () => {
-            const gitCommand = 'git clone git@github.com:lorenzpfei/anki-vacation-tts.git';
-            navigator.clipboard.writeText(gitCommand).then(() => {
-                copyBtn.textContent = 'Copied!';
-                setTimeout(() => {
-                    copyBtn.textContent = 'Copy';
-                }, 2000);
-            }).catch(() => {
-                copyBtn.textContent = 'Failed';
-                setTimeout(() => {
-                    copyBtn.textContent = 'Copy';
-                }, 2000);
-            });
-        });
-
-        function showStatus(msg, type) {
-            statusBox.classList.remove('hidden');
-            statusBox.textContent = msg;
-            statusBox.className = `mt-4 rounded-xl border p-4 text-sm ${type === 'ok' ? 'border-emerald-400/30 bg-emerald-400/10 text-emerald-700' : 'border-rose-400/30 bg-rose-400/10 text-rose-700'}`;
-        }
-    </script>
-</section>
+    </section>
 
 <!-- FEATURES -->
 <section class="mx-auto max-w-7xl px-4 py-12">
@@ -258,22 +215,22 @@ const repoUrl = 'https://github.com/lorenzpfei/anki-vacation-tts';
     <ol class="mt-6 grid gap-4 sm:grid-cols-3">
         <li class="step">
             <div class="step-num">1</div>
-            <h4 class="step-title">Pick languages</h4>
-            <p class="step-copy">Choose source and target. Any pair works.</p>
+            <h4 class="step-title">Clone the repo</h4>
+            <p class="step-copy">Setup API keys (see README).</p>
         </li>
         <li class="step">
             <div class="step-num">2</div>
-            <h4 class="step-title">Download</h4>
-            <p class="step-copy">Download audio mp3s and <code>anki_deck.csv</code>.</p>
+            <h4 class="step-title">Generate deck (Prompt)</h4>
+            <p class="step-copy">Use <code>generator/Prompt.md</code> → save your deck file.</p>
         </li>
         <li class="step">
             <div class="step-num">3</div>
-            <h4 class="step-title">Import to Anki</h4>
-            <p class="step-copy">Drop audio in <code>collection.media</code>, import CSV, study.</p>
+            <h4 class="step-title">Build & import</h4>
+            <p class="step-copy"><code>node generator/generate.js deDE-trTR</code> → copy audio, import <code>anki_unified.csv</code>.</p>
         </li>
     </ol>
     <div class="mt-6">
-        <a href="#builder" class="btn btn-primary">Build my deck →</a>
+        <a href={repoUrl} class="btn btn-primary" rel="noopener noreferrer">Open README</a>
     </div>
 </section>
 
@@ -298,7 +255,7 @@ const repoUrl = 'https://github.com/lorenzpfei/anki-vacation-tts';
             <p class="text-sm text-[--muted]">Made for travelers. MIT Licensed.</p>
             <div class="flex gap-2">
                 <a href={repoUrl} class="btn btn-ghost">GitHub</a>
-                <a href="#builder" class="btn btn-primary">Build a deck</a>
+                <a href="#how-it-works" class="btn btn-primary">How it works</a>
             </div>
         </div>
     </div>
