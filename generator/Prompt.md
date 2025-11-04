@@ -41,8 +41,9 @@ The three most important goals are:
     - Only include “nice but less frequent” variants if they are **very common and clearly worth knowing**, and briefly explain them in `notes_L1`.
 
 3. Short, learnable, natural
-    - Prefer short, high-frequency forms over long, complex sentences.
-    - If it is natural to just say the item when ordering (“Water.” / “Coffee.”), use that, not a long, overly polite question.
+    - Always prefer the **shortest high-frequency form** that sounds natural to locals in TARGET_REGION.
+    - If a short form like “Menu, please” or just “Coffee, please” is natural and polite enough, USE THAT as `l2` and DO NOT use a longer sentence like “Could I have the menu, please?”.
+    - Only mention longer, more formal alternatives in `notes_L1` if they are really worth knowing; do not create separate cards for them.
     - Use contractions, common colloquialisms, and informal grammar where appropriate, as long as they are widely understood and not ultra-niche slang.
 
 4. Context-aware choices
@@ -66,11 +67,12 @@ VERY IMPORTANT:
     - You MAY attach a **polite/plural variant of the SAME phrase** to that card  
       (for example, a casual “thank you” vs. its polite/plural version).
 
-2. Ritual pairs
-    - Use `ritual_pair` when there is a **clear call–response ritual** that locals expect, for example:
-        - A “welcome” phrase that expects a specific reply.
-        - A fixed food blessing and its typical answer.
-    - Call and response belong together on one `ritual_pair` card.
+2. Ritual pairs – when the learner really needs both sides
+    - Use `ritual_pair` when there is a **clear call–response ritual** that locals expect **and** it is important for the learner to both
+        - understand the call (what they will hear), and
+        - actively produce the fixed response.
+    - Typical examples: a “welcome” formula that expects a specific reply the guest says back, or a fixed get-well / sympathy phrase with a set answer.
+    - If the learner will usually **start** the ritual themselves (e.g. complimenting the cook), then prefer a normal `single` card for the phrase the learner should say and only describe the typical reply in `usage_L1` or `notes_L1`.
 
 3. Do NOT mix different lexemes on one card
     - Different words/phrases = different cards.
@@ -95,12 +97,13 @@ No phrase may be missing these fields.
 
 ## CONTENT DOMAINS TO COVER
 
-Cover at least the following domains with **high-frequency, natural phrases** used in TARGET_REGION:
+Cover at least the following domains with **high-frequency, natural, shortest possible (easiest to learn) phrases** used in TARGET_REGION:
 
 1. Greetings & Politeness
     - A casual “hello”.
     - A general daytime greeting that people genuinely use (not just early-morning, not stiff).
     - A natural “bye”.
+    - Casual “yes“ and “no“
     - Two “please” functions:
         - **REQUEST_PLEASE**: used when asking/requesting (e.g. “please” at the end of a request).
         - **POLITENESS_PLEASE**: used as a response to “thank you” (“You’re welcome”, “No problem”, etc.).
@@ -117,7 +120,10 @@ Cover at least the following domains with **high-frequency, natural phrases** us
         - complimenting the cook → response
         - get-well / empathy phrases → reaction
         - multi-purpose “here you go / after you / help yourself” phrase → response
-    - Use `ritual_pair` for these call–response routines.
+        - For each ritual, decide from the learner’s perspective:
+            - If they will **mostly hear** the first phrase and are expected to give a **fixed answer**, model it as a `ritual_pair` (call = what others say, response = what the learner should say).
+            - If they will **mostly say** the ritual phrase themselves (e.g. wishing someone an easy job, complimenting the cook), create a `single` card for the phrase the learner produces and briefly explain the usual reply in `usage_L1` or `notes_L1`.
+        - Remember: the deck is for tourists. They will typically _hear_ things like “Welcome” and _respond_ with the set reply, but they will more often _say_ politeness formulas like “Thanks for the food” or “Easy work to you”, so those should usually be `single` cards.
 
 3. Introduction / small talk basics
     - “My name is …” / “I’m …”
@@ -242,4 +248,5 @@ Make sure your final cards array:
 
 - covers all the domains listed above,
 - uses only **high-frequency, natural phrases** that locals in TARGET_REGION genuinely use,
+- uses the easiest to learn (or shortest) variants
 - and provides **IPA + simple pronunciation** for every target-language phrase.
