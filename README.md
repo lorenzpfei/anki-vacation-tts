@@ -232,6 +232,17 @@ Open `Tools` → `Manage Note Types` → select **Vacation PhraseCard** → `Car
 
 You’ll create **two card types** inside this **one** note type.
 
+**Important:** This note type creates **two card types**, but Card 2 only generates for **ritual pairs** (greetings, responses). For regular phrases that you only need to **produce** (like "Where is the bathroom?"), only Card 1 is created.
+
+- **Card 1 – "Say it"**: Always generated - trains you to produce phrases (L1 → L2)
+- **Card 2 – "Understand it"**: Only for rituals - trains recognition when someone speaks to you (L2 → L1)
+
+This is intentional: you need to both say AND understand greetings, but you only need to say "Where is the toilet?" (you won't hear others asking you that!).
+
+Open `Tools` → `Manage Note Types` → select **Vacation PhraseCard** → `Cards...`.
+
+You'll create **two card types** inside this **one** note type.
+
 #### Card 1 – “Say it” (production)
 
 This card trains you to **produce** the phrase (L1 → L2).  
@@ -325,14 +336,10 @@ Use the “Add Card Type…” button in the Cards... dialog to create Card 2, t
 
 ```html
 {{#Resp_L2}}
-<!-- RITUAL: recognize the call -->
+<!-- RITUAL ONLY: recognize the call and learn the response -->
 <div class="l2">{{L2}}</div>
 <div class="audio">{{Audio_L2}}</div>
 <div class="context">What does this mean, and how do you respond?</div>
-{{/Resp_L2}} {{^Resp_L2}}
-<!-- NORMAL PHRASE: simple L2 recognition -->
-<div class="l2">{{L2}}</div>
-<div class="audio">{{Audio_L2}}</div>
 {{/Resp_L2}}
 ```
 
@@ -439,7 +446,7 @@ Add your new pair deck to `generator/data.js`:
 import { deck as deDE_trTR } from './languages/deDE-trTR.js';
 
 export const decks = {
-  'deDE-trTR': deDE_trTR,
+    'deDE-trTR': deDE_trTR,
 };
 ```
 
@@ -452,6 +459,7 @@ export const decks = {
     ```
 
 2. **Verify output:**
+
 - Audio files created in `output/audio/` with `deDE-trTR_` prefix
 - Unified CSV generated in `output/decks/deDE-trTR/anki_unified.csv`
     - Listen to audio samples for quality
@@ -467,11 +475,13 @@ export const decks = {
 ```javascript
 // generator/languages/deDE-trTR.js
 export const deck = {
-  learnerLang: 'de-DE',
-  targetLang: 'tr-TR',
-  provider: 'azure',
-  voice: { name: 'tr-TR-EmelNeural', ssmlGender: 'FEMALE' },
-  cards: [ /* single + ritual_pair cards with pronunciations */ ],
+    learnerLang: 'de-DE',
+    targetLang: 'tr-TR',
+    provider: 'azure',
+    voice: { name: 'tr-TR-EmelNeural', ssmlGender: 'FEMALE' },
+    cards: [
+        /* single + ritual_pair cards with pronunciations */
+    ],
 };
 ```
 
