@@ -119,6 +119,9 @@ VERY IMPORTANT:
     - Each card MUST include a **cue in LEARNER_LANGUAGE_NAME** (`cue_L1`) + a short **context explanation** (`context_L1`).
     - The app will show `cue_L1` on the front and test whether the learner can recall the target-language phrase.
 
+5. Writing
+    - Use the corresponding writing for target and base languages. Do not simply use latin writing for everything.
+
 ---
 
 ## PRONUNCIATION REQUIREMENTS

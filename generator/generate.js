@@ -489,7 +489,7 @@ async function processDeck(sourceDeckName, targetDeckName) {
             ? targetDeckName
             : `${sourceDeckName}-${targetDeckName}`;
     const outputDir = path.join(__dirname, 'output', 'decks', deckDirName);
-    const audioDir = path.join(__dirname, 'output', 'audio');
+    const audioDir = path.join(__dirname, 'output', 'audio', deckDirName);
 
     try {
         await ensureDirectoryExists(outputDir);
