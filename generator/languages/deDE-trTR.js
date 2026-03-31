@@ -1,10 +1,16 @@
 export const deck = {
     learnerLang: 'de-DE',
     targetLang: 'tr-TR',
-    provider: 'azure',
+    provider: 'elevenlabs',
     voice: {
-        name: 'tr-TR-EmelNeural',
-        ssmlGender: 'FEMALE',
+        voiceId: 'ctoYieZ4J7WwcdhujpMq', // Doga Audiobook
+        name: 'Turkish Voice',
+        settings: {
+            stability: 0.5,
+            similarityBoost: 0.75,
+            style: 0.0,
+            useSpeakerBoost: true,
+        },
     },
     cards: [
         // === GREETINGS & POLITENESS ===

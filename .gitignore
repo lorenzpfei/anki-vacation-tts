@@ -2,3 +2,10 @@ node_modules
 .DS_Store
 .env
 .idea
+
+# Generated output (users generate their own)
+generator/output/audio/
+generator/output/decks/
+# Keep one example CSV
+!generator/output/decks/deDE-trTR/
+!generator/output/decks/deDE-trTR/anki_unified.csv

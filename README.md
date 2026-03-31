@@ -8,7 +8,7 @@ Perfect for travelers who want to learn practical communication basics before vi
 
 ## 🚀 Features
 
-- 🎙️ **High-Quality TTS**: Azure Neural (e.g., tr-TR-EmelNeural) or Google when appropriate
+- 🎙️ **High-Quality TTS**: ElevenLabs, Google Neural2, or Azure Neural voices per language
 - 🧩 **Card-based deck model**: `single` and `ritual_pair` cards incl. IPA + simple pronunciation
 - 📚 **Anki Integration**: Unified CSV (20 fields) for one note type (production + recognition)
 - 🔄 **Pair decks**: One file contains learner L1 + target L2, context, usage, variants
@@ -46,6 +46,7 @@ Create a `.env` file (see `.env.example`).
 
 - **Google**: [Cloud Console](https://console.cloud.google.com/) → Enable Text-to-Speech API → Create API Key
 - **Azure**: [Speech Studio](https://speech.microsoft.com/) → Create Speech resource
+- **ElevenLabs**: [ElevenLabs](https://elevenlabs.io/) → Create API Key (paid plan required for library voices)
 
 ## 🎯 Usage
 
@@ -59,15 +60,11 @@ node generate.js deDE-trTR
 
 This produces a unified CSV and audio for that pair deck.
 
-### Legacy (optional)
-
-The legacy source→target mode still works if you register old-style language decks:
+### Bulk generation
 
 ```bash
-node generate.js <source_deck> <target_deck>
-node generate.js --all-to <target_deck>
-node generate.js --all-from <source_deck>
-node generate.js --all
+node generate.js --all-from deDE     # German to ALL languages
+node generate.js --all               # Generate ALL combinations
 ```
 
 ### Build Audio ZIP Files
@@ -113,14 +110,15 @@ node generate.js
 
 ```
 output/
-├── audio/                         # All audio files in one directory
-│   ├── deDE-trTR_greeting_hello_casual.mp3
-│   ├── deDE-trTR_thanks_casual__plural.mp3
-│   ├── deDE-trTR_ritual_welcome_home__call.mp3
-│   └── deDE-trTR_ritual_welcome_home__response.mp3
+├── audio/
+│   └── deDE-trTR/                          # Audio per deck
+│       ├── deDE-trTR_hello_merhaba.mp3
+│       ├── deDE-trTR_thanks_tesekkurler.mp3
+│       ├── deDE-trTR_welcome_ritual__call.mp3
+│       └── deDE-trTR_welcome_ritual__response.mp3
 └── decks/
-    └── deDE-trTR/                # Pair-deck folder (no duplicated name)
-        └── anki_unified.csv      # Unified CSV (20 fields)
+    └── deDE-trTR/
+        └── anki_unified.csv                # Unified CSV (20 fields)
 ```
 
 ### Unified CSV (20 columns)
@@ -477,8 +475,8 @@ export const decks = {
 export const deck = {
     learnerLang: 'de-DE',
     targetLang: 'tr-TR',
-    provider: 'azure',
-    voice: { name: 'tr-TR-EmelNeural', ssmlGender: 'FEMALE' },
+    provider: 'elevenlabs',
+    voice: { voiceId: 'ctoYieZ4J7WwcdhujpMq' },
     cards: [
         /* single + ritual_pair cards with pronunciations */
     ],
@@ -487,9 +485,10 @@ export const deck = {
 
 ### Voice Provider Guidelines:
 
-- **Google Cloud TTS**: Default choice, excellent Neural2 voices
-- **Azure Speech**: Use when Google doesn't support the language well
-- **Set provider field**: `'google'` or `'azure'` in language object
+- **ElevenLabs**: Best quality, large voice library (requires paid plan for library voices via API)
+- **Google Cloud TTS**: Free tier, excellent Neural2 voices, great for Asian languages
+- **Azure Speech**: Alternative when others don't support the language well
+- **Set provider field**: `'google'`, `'azure'`, or `'elevenlabs'` in the deck config
 
 ## 🌟 Language Authenticity
 
@@ -500,7 +499,7 @@ The goal is to not immediately sound like a foreigner :D
 
 ## 🎵 Audio Management
 
-- **Flat Structure**: All audio files in `generator/output/audio/`
-- **Stable Names**: `[pair]_<cardId>.mp3`, variants `__plural`, rituals `__call`/`__response`
+- **Per-deck folders**: Audio in `generator/output/audio/<deckName>/`
+- **Stable Names**: `<deckName>_<cardId>.mp3`, variants `__plural`, rituals `__call`/`__response`
 - **Efficient Storage**: Files are skipped if already present
 - **Smart Generation**: Resilient synthesis with provider-aware config

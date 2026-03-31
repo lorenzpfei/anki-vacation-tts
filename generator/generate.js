@@ -2,23 +2,25 @@
 === USAGE INSTRUCTIONS ===
 
 1.  **Installation:**
-    Run `npm install @google-cloud/text-to-speech microsoft-cognitiveservices-speech-sdk dotenv` in your terminal.
+    Run `npm install @google-cloud/text-to-speech microsoft-cognitiveservices-speech-sdk @elevenlabs/elevenlabs-js dotenv` in your terminal.
 
 2.  **Authentication:**
     - Create a `.env` file in the root directory (see .env.example).
     - Add your Google API key: GOOGLE_API_KEY="your_api_key_here"
-    - For Azure TTS (Albanian): AZURE_SPEECH_KEY="your_key" and AZURE_SPEECH_REGION="your_region"
+    - For Azure TTS: AZURE_SPEECH_KEY="your_key" and AZURE_SPEECH_REGION="your_region"
+    - For ElevenLabs TTS: ELEVENLABS_API_KEY="your_api_key_here"
 
 3.  **Adding Data:**
     - Open the `data.js` file.
     - Add new decks or phrases following the provided structure.
     - Google voices: https://cloud.google.com/text-to-speech/docs/voices
     - Azure voices: https://docs.microsoft.com/azure/cognitive-services/speech-service/language-support
-    - Set voice.provider: 'azure' for Azure TTS voices
+    - ElevenLabs voices: https://elevenlabs.io/voice-library
+    - Set voice.provider: 'azure', 'elevenlabs', or 'google' for the respective TTS provider
 
 4.  **Running the Script:**
     - Execute the script with the desired deck name as argument.
-    - Example: `node generate.js deDE`
+    - Example: `node generate.js deDE-arSY-advanced`
     - If you start the script without arguments, it will list all available decks.
 
 5.  **Output:**
@@ -29,6 +31,7 @@
 
 import textToSpeech from '@google-cloud/text-to-speech';
 import * as sdk from 'microsoft-cognitiveservices-speech-sdk';
+import { ElevenLabsClient } from '@elevenlabs/elevenlabs-js';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -44,15 +47,16 @@ const client = new textToSpeech.TextToSpeechClient({
     apiKey: process.env.GOOGLE_API_KEY,
 });
 
+const elevenlabs = new ElevenLabsClient({
+    apiKey: process.env.ELEVENLABS_API_KEY,
+});
+
 function showUsage() {
     console.log('\n🚀 Anki TTS Generator');
     console.log('=====================\n');
     console.log('Usage:');
     console.log(
-        '  node generate.js <source_deck> <target_deck>     # Legacy: separate decks'
-    );
-    console.log(
-        '  node generate.js <pair_deck>                     # New: single pair deck (e.g., deDE-trTR)'
+        '  node generate.js <pair_deck>                     # Single pair deck (e.g., deDE-trTR)'
     );
     console.log(
         '  node generate.js --all-to <target_deck>          # Generate all sources to target'
@@ -64,9 +68,8 @@ function showUsage() {
         '  node generate.js --all                           # Generate ALL combinations\n'
     );
     console.log('Parameters:');
-    console.log('  source_deck  - The source language deck for translations');
     console.log(
-        '  target_deck  - The target language deck to generate audio for'
+        '  pair_deck    - The language pair deck to generate (e.g., deDE-trTR)'
     );
     console.log(
         '  --all-to     - Generate all available source languages to the specified target'
@@ -89,9 +92,11 @@ function showUsage() {
         console.log(`  • ${deckName} (${lang}, ${count} items)`);
     });
     console.log('\nExamples:');
-    console.log('  node generate.js deDE sqAL           # German to Albanian');
     console.log(
-        '  node generate.js enUS esCO           # English to Colombian Spanish'
+        '  node generate.js deDE-trTR           # German to Turkish'
+    );
+    console.log(
+        '  node generate.js deDE-hiIN-essential  # German to Hindi (essential)'
     );
     console.log(
         '  node generate.js --all-to deDE       # ALL languages to German'
@@ -152,6 +157,36 @@ async function generateAudioAzure(text, voiceName, outputPath) {
             reject(new Error(`Azure TTS setup error: ${error.message}`));
         }
     });
+}
+
+async function generateAudioElevenLabs(text, voiceId, outputPath, voiceSettings = {}) {
+    try {
+        const audio = await elevenlabs.textToSpeech.convert(voiceId, {
+            text: text,
+            modelId: 'eleven_multilingual_v2',
+            outputFormat: 'mp3_44100_128',
+            voiceSettings: {
+                stability: voiceSettings.stability || 0.5,
+                similarityBoost: voiceSettings.similarityBoost || 0.75,
+                style: voiceSettings.style || 0.0,
+                useSpeakerBoost: voiceSettings.useSpeakerBoost !== false,
+            },
+        });
+
+        const chunks = [];
+        const reader = audio.getReader();
+
+        while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+            chunks.push(value);
+        }
+
+        const buffer = Buffer.concat(chunks);
+        await fs.promises.writeFile(outputPath, buffer);
+    } catch (error) {
+        throw new Error(`ElevenLabs TTS error: ${error.message}`);
+    }
 }
 
 async function ensureDirectoryExists(dirPath) {
@@ -524,12 +559,18 @@ async function processDeck(sourceDeckName, targetDeckName) {
                 continue;
             }
 
-            const isAzure = provider === 'azure';
-            if (isAzure) {
+            if (provider === 'azure') {
                 await generateAudioAzure(
                     entry.text,
                     deck.voice.name,
                     audioPath
+                );
+            } else if (provider === 'elevenlabs') {
+                await generateAudioElevenLabs(
+                    entry.text,
+                    deck.voice.voiceId,
+                    audioPath,
+                    deck.voice.settings
                 );
             } else {
                 await generateAudio(
@@ -584,19 +625,13 @@ function checkEnvironment(deck) {
         (deck && (deck.provider || (deck.voice && deck.voice.provider))) ||
         'google';
 
-    if (provider !== 'azure') {
+    if (provider === 'google') {
         if (!process.env.GOOGLE_API_KEY) {
             console.error(
                 '\n❌ Error: GOOGLE_API_KEY environment variable not set.'
             );
             console.error('Create a .env file with:');
-            console.error('GOOGLE_API_KEY="your_api_key_here"');
-            if (provider === 'azure') {
-                console.error('AZURE_SPEECH_KEY="your_azure_speech_key_here"');
-                console.error('AZURE_SPEECH_REGION="your_azure_region"\n');
-            } else {
-                console.log('\n');
-            }
+            console.error('GOOGLE_API_KEY="your_api_key_here"\n');
             process.exit(1);
         }
     }
@@ -609,6 +644,17 @@ function checkEnvironment(deck) {
             console.error('Create a .env file with:');
             console.error('AZURE_SPEECH_KEY="your_azure_speech_key_here"');
             console.error('AZURE_SPEECH_REGION="your_azure_region"\n');
+            process.exit(1);
+        }
+    }
+
+    if (provider === 'elevenlabs') {
+        if (!process.env.ELEVENLABS_API_KEY) {
+            console.error(
+                '\n❌ Error: ELEVENLABS_API_KEY environment variable not set.'
+            );
+            console.error('Create a .env file with:');
+            console.error('ELEVENLABS_API_KEY="your_api_key_here"\n');
             process.exit(1);
         }
     }
@@ -881,32 +927,13 @@ async function main() {
         return;
     }
 
-    // Regular generation: support legacy two-args or new one-arg pair deck
-    if (firstArg && !secondArg && decks[firstArg]) {
-        // Single pair deck mode
+    // Single pair deck mode
+    if (firstArg && decks[firstArg]) {
         const pairDeckName = firstArg;
         const deck = decks[pairDeckName];
         checkEnvironment(deck);
         try {
             await processDeck(pairDeckName, pairDeckName);
-        } catch (error) {
-            console.error(`\n❌ Unexpected error: ${error.message}`);
-            process.exit(1);
-        }
-        return;
-    }
-
-    if (firstArg && secondArg) {
-        const sourceDeck = firstArg;
-        const targetDeck = secondArg;
-        const deck = decks[targetDeck];
-        if (!deck) {
-            showUsage();
-            return;
-        }
-        checkEnvironment(deck);
-        try {
-            await processDeck(sourceDeck, targetDeck);
         } catch (error) {
             console.error(`\n❌ Unexpected error: ${error.message}`);
             process.exit(1);

@@ -4,6 +4,7 @@
         "build-zip": "node build-audio-zips.js"
     },
     "dependencies": {
+        "@elevenlabs/elevenlabs-js": "^2.31.0",
         "@google-cloud/text-to-speech": "^6.2.0",
         "dotenv": "^17.2.1",
         "microsoft-cognitiveservices-speech-sdk": "^1.45.0"
