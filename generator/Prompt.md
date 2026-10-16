@@ -131,6 +131,8 @@ For **every target-language phrase** (including responses and variants) you MUST
 
 For tonal languages (e.g. Mandarin), `pronunciation_simple` MUST be the standard romanization with tone marks as in textbooks (e.g. pinyin `nǐ hǎo`, with 一 and 不 marked in their spoken tone), because learners cannot recover tones from any other spelling.
 
+`pronunciation_simple` must never make the learner pronounce a sound that is not there. Mark nasal vowels as nasal (e.g. Hindi हाँ → `hã`, not `haan`, which reads as a spoken n), and keep distinctions that change meaning (long vs short vowels, aspiration) visible where LEARNER_LANGUAGE_NAME spelling can express them.
+
 No phrase may be missing these fields.
 
 ---
