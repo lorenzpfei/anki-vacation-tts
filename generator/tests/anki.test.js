@@ -80,12 +80,12 @@ test('keeps note guids stable between builds', () => {
     assert.deepEqual(guids(), guids());
 });
 
-test('names the deck after the target language in the learner language', () => {
+test('names the deck after the target language in English', () => {
     const decks = apkg =>
         Object.values(
             JSON.parse(apkg.db.prepare('SELECT decks FROM col').get().decks)
         )
             .map(d => d.name)
             .sort();
-    assert.deepEqual(decks(build()), ['Default', 'Türkisch (Türkei)']);
+    assert.deepEqual(decks(build()), ['Default', 'Turkish (Türkiye)']);
 });

@@ -287,9 +287,7 @@ export function buildApkg(deckName, deck, audioDir) {
     const deckId = parseInt(sha1(deckName).slice(0, 12), 16);
     const deckTitle =
         deck.title ??
-        new Intl.DisplayNames([deck.learnerLang], { type: 'language' }).of(
-            deck.targetLang
-        );
+        new Intl.DisplayNames(['en'], { type: 'language' }).of(deck.targetLang);
     const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'apkg-'));
     const dbPath = path.join(tmp, 'collection.anki2');
     const db = new DatabaseSync(dbPath);

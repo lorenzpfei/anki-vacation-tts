@@ -107,7 +107,7 @@ A deck is a JSON file in `generator/decks/`:
 ```
 
 - `tts` takes `provider` and `voice`, plus optional `model`, `style` (Gemini), `rate` (Azure, e.g. `-20%`) and `voice_settings` (ElevenLabs).
-- The Anki deck is named after the target language in the learner's language (e.g. `Chinesisch (China)`); set `title` to override it.
+- The Anki deck is named after the target language in English (e.g. `Chinese (China)`); set `title` to override it.
 - Cards are either `single` (with optional polite/plural variant) or `ritual_pair` (call + fixed response). The exact fields are described in [Prompt.md](generator/Prompt.md).
 - Card ids are stable: they name the audio files and identify notes in Anki, so keep them when editing a card.
 
