@@ -1,423 +1,504 @@
 ---
-/*
-  Anki Vacation TTS Generator — Landing page
-  Showcase with interactive Anki card demo
-*/
-import '../styles/global.css'
+import '../styles/global.css';
 
-const title = 'Anki Vacation TTS Generator';
-const tagline = 'Learn only what you actually need for your vacation abroad.';
+const title = 'Anki Vacation TTS';
+const description =
+    'Open-source generator for Anki travel phrase decks with native audio, IPA and a pronunciation guide you can actually read.';
 const repoUrl = 'https://github.com/lorenzpfei/anki-vacation-tts';
+
+const decks = [
+    ['Mandarin', 'zh-CN', 51],
+    ['Hindi', 'hi-IN', 48],
+    ['French', 'fr-FR', 96],
+    ['Arabic (Syrian)', 'ar-SY', 92],
+    ['Japanese', 'ja-JP', 69],
+    ['Korean', 'ko-KR', 52],
+    ['Turkish', 'tr-TR', 51],
+];
 ---
 
 <html lang="en">
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>{title}</title>
-    <meta name="description" content={tagline} />
-    <link rel="icon" href="/logo.png" />
-</head>
-<body class="min-h-screen bg-[--bg] text-[--text] antialiased">
-<!-- Backdrop decorations -->
-<div aria-hidden="true" class="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
-    <div class="absolute -top-32 right-0 h-[36rem] w-[36rem] rounded-full bg-brand/20 blur-3xl"></div>
-    <div class="absolute -left-20 top-40 h-[28rem] w-[28rem] rounded-full bg-brand-2/20 blur-3xl"></div>
-    <div class="absolute bottom-[-10rem] left-1/2 h-[40rem] w-[40rem] -translate-x-1/2 rounded-full bg-white/5 blur-3xl"></div>
-</div>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>{title}</title>
+        <meta name="description" content={description} />
+        <link rel="icon" href="/logo.png" />
+    </head>
+    <body>
+        <div class="page">
+            <header class="nav">
+                <a href="/" class="wordmark">
+                    <img src="/logo.png" alt="" width="20" height="20" />
+                    Anki Vacation TTS
+                </a>
+                <a href={repoUrl} class="nav-link">GitHub</a>
+            </header>
 
-<header class="mx-auto max-w-7xl px-4 py-5">
-    <nav class="flex items-center justify-between gap-4">
-        <a href="/" class="group inline-flex items-center gap-2 hover:no-underline">
-            <img src="logo.png" alt="Logo" class="w-6"/>
-            <span class="text-[--text] text-lg font-semibold tracking-tight">Anki Vacation TTS</span>
-        </a>
-        <div class="hidden sm:flex items-center gap-2">
-            <a href={repoUrl} class="btn btn-ghost" rel="noopener noreferrer">GitHub</a>
-            <a href="#how-it-works" class="btn btn-primary">How it works</a>
-        </div>
-    </nav>
-</header>
-
-<!-- HERO -->
-<section class="mx-auto max-w-7xl px-4 pt-4 pb-12 sm:pt-10">
-    <div class="grid items-center gap-10 sm:gap-12 md:grid-cols-2">
-        <div>
-          <span class="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white px-3 py-1 text-xs text-slate-800">
-            <span>Open Source</span>
-            <span class="h-1 w-1 rounded-full bg-slate-400"></span>
-            <a href={repoUrl} target="_blank" class="hover:underline">github.com/lorenzpfei/anki-vacation-tts</a>
-          </span>
-            <h1 class="mt-4 text-4xl font-extrabold tracking-tight sm:text-5xl">
-                Skip the Textbook.<br/>Master Travel Talk.
-            </h1>
-            <p class="mt-3 max-w-prose text-lg text-[--muted]">
-                {tagline} Generate audio flashcards with authentic, colloquial travel phrases, high-quality TTS, and a ready-to-import Anki deck — for any language.
-            </p>
-            <div class="mt-6 flex flex-wrap items-center gap-3">
-                <a href="#how-it-works" class="btn btn-primary">How it works →</a>
-                <a href={repoUrl} class="btn btn-ghost" rel="noopener noreferrer">Star on GitHub</a>
-            </div>
-            <ul class="mt-8 grid max-w-xl grid-cols-2 gap-2 text-sm text-[--muted]">
-                <li class="flex items-center gap-2"><span class="text-base">🎙️</span> Gemini, ElevenLabs, Azure + Google TTS</li>
-                <li class="flex items-center gap-2"><span class="text-base">🌍</span> Any language, drafted by AI</li>
-                <li class="flex items-center gap-2"><span class="text-base">📚</span> One .apkg file with audio</li>
-                <li class="flex items-center gap-2"><span class="text-base">⚡</span> Smart, idempotent generation</li>
-            </ul>
-        </div>
-
-        <!-- INTERACTIVE ANKI CARD DEMO -->
-        <div class="anki-card-wrapper" id="anki-demo">
-            <div class="anki-card" id="anki-card">
-                <!-- FRONT -->
-                <div class="anki-card-face anki-card-front">
-                    <div class="anki-card-tap">Tap to reveal →</div>
-                    <div class="anki-card-cue">Hello / Good afternoon</div>
-                    <div class="anki-card-context">General greeting between 10:00 and 17:00.</div>
-                    <div class="anki-card-hint">🇯🇵 Japanese</div>
-                </div>
-                <!-- BACK -->
-                <div class="anki-card-face anki-card-back">
-                    <div class="anki-card-l2">こんにちは</div>
-                    <button class="anki-audio-btn" id="play-audio" type="button" aria-label="Play audio">
-                        <svg class="anki-icon-play" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
-                        <svg class="anki-icon-pause" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>
-                    </button>
-                    <div class="anki-card-pron">
-                        <span class="anki-label">IPA</span> konɲitɕiɰa
-                        <span class="mx-2 text-slate-400">|</span>
-                        <span class="anki-label">Simple</span> Kon-ni-tschi-wa
+            <section class="hero">
+                <div class="hero-text">
+                    <h1>The phrases you'll actually use abroad.</h1>
+                    <p class="lead">
+                        Anki Vacation TTS builds small flashcard decks for a
+                        trip: the greetings, orders and questions locals
+                        really use, each with natural audio, IPA and a
+                        spelling you can pronounce at first sight.
+                    </p>
+                    <div class="actions">
+                        <a href="#setup" class="button">Make a deck</a>
+                        <a href={repoUrl} class="text-link"
+                            >Source on GitHub</a
+                        >
                     </div>
-                    <div class="anki-card-meaning">Good afternoon</div>
-                    <div class="anki-card-usage">The standard greeting. Not used with close friends or family (they'd just say "Nee" or make eye contact).</div>
-                    <div class="anki-card-tag">greeting</div>
+                    <p class="fineprint">Free and open source, MIT licensed.</p>
                 </div>
-            </div>
-            <p class="mt-3 text-center text-sm text-[--muted]">Interactive demo — this is what your Anki cards will look like</p>
+
+                <figure class="demo">
+                    <div class="card" id="card" role="button" tabindex="0">
+                        <div class="face front">
+                            <span class="label">Mandarin · say it</span>
+                            <p class="cue">How much is this?</p>
+                            <p class="context">
+                                Asking the price at a market or in a shop.
+                            </p>
+                            <span class="hint">Tap to flip</span>
+                        </div>
+                        <div class="face back">
+                            <span class="label">Mandarin · say it</span>
+                            <div class="answer">
+                                <p class="l2" lang="zh-CN">多少钱？</p>
+                                <button
+                                    class="play"
+                                    id="play"
+                                    type="button"
+                                    aria-label="Play audio"
+                                >
+                                    <svg
+                                        viewBox="0 0 24 24"
+                                        width="16"
+                                        height="16"
+                                        aria-hidden="true"
+                                        ><path
+                                            d="M7 4.5v15l12-7.5z"
+                                            fill="currentColor"></path></svg
+                                    >
+                                </button>
+                            </div>
+                            <dl class="facts">
+                                <dt>Simple</dt>
+                                <dd>duōshao qián?</dd>
+                                <dt>IPA</dt>
+                                <dd>two˥ ʂɑʊ̯ tɕʰjɛn˧˥</dd>
+                                <dt>Literal</dt>
+                                <dd>How much money?</dd>
+                            </dl>
+                            <p class="usage">
+                                Point at the item and ask. The seller often
+                                types the price into a calculator.
+                            </p>
+                        </div>
+                    </div>
+                    <figcaption>
+                        A real card from the Mandarin deck, translated to
+                        English.
+                    </figcaption>
+                </figure>
+            </section>
+
+            <section class="section">
+                <h2>What goes into a deck</h2>
+                <div class="columns">
+                    <div>
+                        <h3>Phrases locals say</h3>
+                        <p>
+                            One best phrase per situation, in its shortest
+                            natural form. "Kartla?" instead of "Could I pay by
+                            card, please?".
+                        </p>
+                    </div>
+                    <div>
+                        <h3>Calls and responses</h3>
+                        <p>
+                            Fixed rituals like Turkish "Hoş geldiniz" → "Hoş
+                            bulduk" are learned as a pair: what you hear, and
+                            what you say back.
+                        </p>
+                    </div>
+                    <div>
+                        <h3>A second opinion</h3>
+                        <p>
+                            Every new deck is drafted, then reviewed again for
+                            stiff phrasing, wrong tones and bad transcriptions
+                            before any audio is made.
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="section" id="setup">
+                <h2>Make a deck</h2>
+                <p class="section-lead">
+                    You need Node.js 22, a Gemini API key for writing the deck
+                    and a key for the voice you pick (Gemini, Azure, Google or
+                    ElevenLabs).
+                </p>
+                <pre><code><span class="dim"># once</span>
+git clone https://github.com/lorenzpfei/anki-vacation-tts.git
+cd anki-vacation-tts/generator && pnpm install && cp .env.example .env
+
+<span class="dim"># draft and review a new deck</span>
+node generate.js new --target zh-CN --region "mainland China"
+
+<span class="dim"># synthesize audio and package it</span>
+node generate.js deDE-zhCN</code></pre>
+                <p class="section-lead">
+                    The last step writes <code>output/deDE-zhCN.apkg</code>.
+                    Open it in Anki and the note type, card templates and audio
+                    are all there.
+                </p>
+            </section>
+
+            <section class="section">
+                <h2>Decks in the repository</h2>
+                <p class="section-lead">
+                    These are written for German speakers. Use
+                    <code>--learner en-US</code> to generate decks with English
+                    explanations.
+                </p>
+                <ul class="decks">
+                    {
+                        decks.map(([name, code, cards]) => (
+                            <li>
+                                <span>{name}</span>
+                                <span class="dim">
+                                    {code} · {cards} cards
+                                </span>
+                            </li>
+                        ))
+                    }
+                </ul>
+            </section>
+
+            <section class="section">
+                <h2>Why flashcards</h2>
+                <p class="section-lead">
+                    Anki asks you to recall a phrase before showing it, and
+                    schedules each card right before you would forget it. Both
+                    effects are well studied: <a
+                        href="https://pmc.ncbi.nlm.nih.gov/articles/PMC10403443/"
+                        >Anki use and outcomes</a
+                    >, <a href="https://ijms.pitt.edu/IJMS/article/view/1549"
+                        >spaced repetition</a
+                    >. A trip deck of around 50 cards takes a few minutes a day
+                    over two or three weeks.
+                </p>
+            </section>
+
+            <footer class="footer">
+                <span>Anki Vacation TTS</span>
+                <a href={repoUrl}>GitHub</a>
+            </footer>
         </div>
-    </div>
-</section>
 
-<!-- GIT CLONE -->
-<section class="mx-auto max-w-2xl px-4 pb-10">
-    <div class="rounded-2xl border border-[#3A4049] bg-[#010409] p-4 shadow-2xl backdrop-blur w-full">
-        <div class="rounded-xl border border-[#3A4049] bg-[#151B23] p-4">
-            <div class="flex items-center justify-between">
-                <pre class="text-xs leading-relaxed text-white flex-1 overflow-x-auto"><code>git clone git@github.com:lorenzpfei/anki-vacation-tts.git</code></pre>
-                <button id="copy-btn" class="ml-3 rounded-md bg-white/10 px-2 py-1 text-xs text-white hover:bg-white/20 transition-colors" title="Copy to clipboard">Copy</button>
-            </div>
-        </div>
-    </div>
-</section>
+        <script is:inline>
+            const card = document.getElementById('card');
+            const audio = new Audio('/audio/mandarin-how-much.mp3');
+            const flip = () => card.classList.toggle('flipped');
+            card.addEventListener('click', event => {
+                if (!event.target.closest('#play')) flip();
+            });
+            card.addEventListener('keydown', event => {
+                if (event.key === 'Enter' || event.key === ' ') {
+                    event.preventDefault();
+                    flip();
+                }
+            });
+            document.getElementById('play').addEventListener('click', () => {
+                audio.currentTime = 0;
+                audio.play();
+            });
+        </script>
 
-<!-- WHY ANKI -->
-<section class="mx-auto max-w-7xl px-4 pt-2 pb-8">
-    <div class="rounded-2xl border border-white/10 bg-white/5 p-6 shadow-xl">
-        <div class="inline-flex items-center gap-2 rounded-full border border-transparent bg-[--brand] px-3 py-1 text-xs font-semibold text-black shadow-md shadow-emerald-500/30 ring-1 ring-emerald-600/40">
-            <span>🧠</span>
-            <span>Science-backed</span>
-        </div>
-        <h2 class="mt-3 text-2xl font-semibold tracking-tight">Why Anki works</h2>
-        <p class="mt-2 text-[--muted]">Anki combines <strong>active recall</strong> (testing yourself) with <strong>spaced repetition</strong> (reviewing right before you forget) for better long-term memory.</p>
-        <ul class="mt-4 grid gap-3 sm:grid-cols-2 text-sm text-[--muted]">
-            <li class="rounded-xl border border-white/10 bg-card p-4">
-                <div class="font-medium text-[--text-card]">Active recall</div>
-                <div class="mt-1 text-[--muted-card]">Testing beats rereading and highlights gaps.</div>
-            </li>
-            <li class="rounded-xl border border-white/10 bg-card p-4">
-                <div class="font-medium text-[--text-card]">Spaced repetition</div>
-                <div class="mt-1 text-[--muted-card]">Review at optimized intervals for durable retention.</div>
-            </li>
-        </ul>
-        <div class="mt-4 text-xs text-[--muted]">Backed by research: <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC10403443/" target="_blank" rel="noopener noreferrer" class="underline">Anki & outcomes</a>, <a href="https://ijms.pitt.edu/IJMS/article/view/1549" target="_blank" rel="noopener noreferrer" class="underline">spaced repetition</a>.</div>
-    </div>
-</section>
-
-<!-- FEATURES -->
-<section id="overview" class="mx-auto max-w-7xl px-4 py-10">
-    <div class="rounded-2xl border border-white/10 bg-white/5 p-6 shadow-xl">
-        <h2 class="text-2xl font-semibold tracking-tight">What makes this different</h2>
-        <p class="mt-2 text-sm text-[--muted]">Real phrases with IPA + simple pronunciation, culture-specific rituals, and high-quality audio — generated for any language you need.</p>
-
-        <div class="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            <article class="feature">
-                <div class="feature-icon">🗣️</div>
-                <h3 class="feature-title">Authentic phrases</h3>
-                <p class="feature-copy">No textbook filler. Phrases people actually say in cafes, shops, streets, and emergencies.</p>
-            </article>
-            <article class="feature">
-                <div class="feature-icon">🤝</div>
-                <h3 class="feature-title">Ritual pairs</h3>
-                <p class="feature-copy">Learn social rituals as a pair: the call you'll hear and the fixed response you give.</p>
-            </article>
-            <article class="feature">
-                <div class="feature-icon">🎧</div>
-                <h3 class="feature-title">Dual pronunciation</h3>
-                <p class="feature-copy">Every card includes full IPA and a simplified version for quick reading.</p>
-            </article>
-            <article class="feature">
-                <div class="feature-icon">🌍</div>
-                <h3 class="feature-title">Any language</h3>
-                <p class="feature-copy">One command drafts a deck for your target language with Gemini, then has it reviewed by a native-speaker pass.</p>
-            </article>
-            <article class="feature">
-                <div class="feature-icon">🔊</div>
-                <h3 class="feature-title">Premium voices</h3>
-                <p class="feature-copy">Gemini, ElevenLabs, Azure, or Google — configurable per deck.</p>
-            </article>
-            <article class="feature">
-                <div class="feature-icon">📚</div>
-                <h3 class="feature-title">Anki-ready</h3>
-                <p class="feature-copy">A single .apkg with note type, card templates and audio for both production and recognition cards.</p>
-            </article>
-        </div>
-    </div>
-</section>
-
-<!-- HOW IT WORKS -->
-<section id="how-it-works" class="mx-auto max-w-7xl px-4 py-8">
-    <h2 class="text-2xl font-semibold tracking-tight">How it works</h2>
-    <ol class="mt-6 grid gap-4 sm:grid-cols-3">
-        <li class="step">
-            <div class="step-num">1</div>
-            <h4 class="step-title">Clone & setup</h4>
-            <p class="step-copy">Clone the repo, run <code>pnpm install</code>, add your API keys to <code>.env</code>.</p>
-        </li>
-        <li class="step">
-            <div class="step-num">2</div>
-            <h4 class="step-title">Generate a deck</h4>
-            <p class="step-copy">Run <code>node generate.js new --target tr-TR --region Istanbul</code>. Pick a level (essentials, standard, or advanced).</p>
-        </li>
-        <li class="step">
-            <div class="step-num">3</div>
-            <h4 class="step-title">Build & import</h4>
-            <p class="step-copy">Run <code>node generate.js &lt;deck&gt;</code>, open the generated <code>.apkg</code> in Anki, and start learning.</p>
-        </li>
-    </ol>
-    <div class="mt-6">
-        <a href={repoUrl} class="btn btn-primary" rel="noopener noreferrer">Get started →</a>
-    </div>
-</section>
-
-<!-- FAQ -->
-<section class="mx-auto max-w-5xl px-4 py-12">
-    <h2 class="text-2xl font-semibold tracking-tight">FAQ</h2>
-    <div class="mt-6 divide-y divide-gray-200 rounded-2xl border border-gray-200 bg-card shadow-lg">
-        <details class="group p-4">
-            <summary class="cursor-pointer list-none font-medium text-[--text-card]">Where do the voices come from?</summary>
-            <p class="mt-2 text-[--muted-card]">Gemini, ElevenLabs, Azure Speech, or Google Cloud TTS — chosen per deck, with API keys in <code>.env</code>.</p>
-        </details>
-        <details class="group p-4">
-            <summary class="cursor-pointer list-none font-medium text-[--text-card]">Can I add a new language?</summary>
-            <p class="mt-2 text-[--muted-card]">Yes — that's the whole point. Run <code>node generate.js new</code> with your target language and region. Gemini drafts the deck, a review pass checks it, and <code>node generate.js &lt;deck&gt;</code> turns it into an Anki package.</p>
-        </details>
-        <details class="group p-4">
-            <summary class="cursor-pointer list-none font-medium text-[--text-card]">What are ritual pairs?</summary>
-            <p class="mt-2 text-[--muted-card]">Some phrases come in fixed call→response pairs (e.g., Turkish "Hoş geldiniz" → "Hoş bulduk"). These create two Anki cards: one for producing the response, one for understanding what you hear.</p>
-        </details>
-    </div>
-</section>
-
-<footer class="mx-auto max-w-7xl px-4 py-12">
-    <div class="rounded-2xl border border-white/10 bg-card p-6">
-        <div class="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
-            <p class="text-sm text-[--muted]">Made for travelers. MIT Licensed.</p>
-            <div class="flex gap-2">
-                <a href={repoUrl} class="btn btn-ghost">GitHub</a>
-                <a href="#how-it-works" class="btn btn-primary">Get started</a>
-            </div>
-        </div>
-    </div>
-</footer>
-
-<script is:inline>
-// Anki card flip
-const card = document.getElementById('anki-card');
-card?.addEventListener('click', (e) => {
-    if (e.target.closest('#play-audio')) return;
-    card.classList.toggle('flipped');
-});
-
-// Audio playback with play/pause toggle
-const playBtn = document.getElementById('play-audio');
-const iconPlay = playBtn?.querySelector('.anki-icon-play');
-const iconPause = playBtn?.querySelector('.anki-icon-pause');
-const audio = new Audio('/audio/example.mp3');
-
-function setPlaying(playing) {
-    if (iconPlay) iconPlay.style.display = playing ? 'none' : '';
-    if (iconPause) iconPause.style.display = playing ? '' : 'none';
-}
-
-playBtn?.addEventListener('click', (e) => {
-    e.stopPropagation();
-    if (audio.paused) {
-        audio.currentTime = 0;
-        audio.play();
-        setPlaying(true);
-    } else {
-        audio.pause();
-        setPlaying(false);
-    }
-});
-
-audio.addEventListener('ended', () => setPlaying(false));
-
-// Copy button
-const copyBtn = document.getElementById('copy-btn');
-copyBtn?.addEventListener('click', () => {
-    navigator.clipboard.writeText('git clone git@github.com:lorenzpfei/anki-vacation-tts.git');
-    copyBtn.textContent = 'Copied!';
-    setTimeout(() => copyBtn.textContent = 'Copy', 2000);
-});
-</script>
-
-<style is:global>
-    @reference "../styles/global.css";
-    .btn{ @apply inline-flex items-center gap-2 rounded-xl border px-4 py-2 text-sm font-medium shadow-sm transition-all no-underline; }
-    .btn-primary{ @apply border-transparent bg-emerald-500 text-white hover:bg-emerald-600; }
-    .btn-outline{ @apply border-white/20 bg-transparent text-[--text] hover:bg-white/5 hover:border-emerald-500/50; }
-    .btn-ghost{ @apply border-transparent bg-gray-900 text-white hover:bg-gray-800; }
-    .feature{ @apply rounded-2xl border border-gray-200 bg-card p-5 shadow-sm hover:shadow-lg transition-shadow; }
-    .feature-icon{ @apply mb-2 text-2xl; }
-    .feature-title{ @apply text-base font-semibold text-[--text-card]; }
-    .feature-copy{ @apply text-sm text-[--muted-card]; }
-    .step{ @apply rounded-2xl border border-white/10 bg-card p-5 shadow-sm; }
-    .step-num{ @apply grid h-8 w-8 place-items-center rounded-full bg-emerald-500/20 text-emerald-400 font-semibold; }
-    .step-title{ @apply mt-2 text-base font-semibold text-[--text-card]; }
-    .step-copy{ @apply text-sm text-[--muted-card]; }
-
-    /* Anki Card Demo */
-    .anki-card-wrapper {
-        perspective: 1000px;
-    }
-    .anki-card {
-        position: relative;
-        width: 100%;
-        aspect-ratio: 4/3;
-        cursor: pointer;
-        transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-        transform-style: preserve-3d;
-    }
-    .anki-card.flipped {
-        transform: rotateY(180deg);
-    }
-    .anki-card-face {
-        position: absolute;
-        inset: 0;
-        backface-visibility: hidden;
-        border-radius: 1rem;
-        border: 1px solid rgba(255,255,255,0.1);
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        padding: 2rem;
-        text-align: center;
-    }
-    .anki-card-front {
-        background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-        box-shadow: 0 25px 50px -12px rgba(0,0,0,0.3);
-    }
-    .anki-card-back {
-        background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-        transform: rotateY(180deg);
-        box-shadow: 0 25px 50px -12px rgba(0,0,0,0.3);
-    }
-    .anki-card-tap {
-        position: absolute;
-        bottom: 1rem;
-        font-size: 0.8rem;
-        color: #94a3b8;
-        animation: pulse-hint 2s ease-in-out infinite;
-    }
-    @keyframes pulse-hint {
-        0%, 100% { opacity: 0.6; }
-        50% { opacity: 1; }
-    }
-    .anki-card-cue {
-        font-size: 1.6rem;
-        font-weight: 700;
-        color: #0f172a;
-        line-height: 1.3;
-    }
-    .anki-card-context {
-        margin-top: 0.75rem;
-        font-size: 0.9rem;
-        color: #64748b;
-        max-width: 300px;
-    }
-    .anki-card-hint {
-        margin-top: 1.5rem;
-        font-size: 0.8rem;
-        color: #94a3b8;
-    }
-    .anki-card.flipped .anki-card-tap {
-        display: none;
-    }
-    .anki-card-l2 {
-        font-size: 2.8rem;
-        font-weight: 700;
-        color: #0f172a;
-        line-height: 1.2;
-    }
-    .anki-audio-btn {
-        margin-top: 0.75rem;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        width: 2.5rem;
-        height: 2.5rem;
-        min-width: 2.5rem;
-        min-height: 2.5rem;
-        border-radius: 9999px;
-        background: #22c55e;
-        color: white;
-        border: none;
-        padding: 0;
-        cursor: pointer;
-        transition: background 0.2s, transform 0.1s;
-        box-shadow: 0 4px 12px rgba(34,197,94,0.3);
-    }
-    .anki-audio-btn:hover {
-        background: #16a34a;
-        transform: scale(1.05);
-    }
-    .anki-audio-btn:active {
-        transform: scale(0.95);
-    }
-    .anki-card-pron {
-        margin-top: 0.75rem;
-        font-size: 0.85rem;
-        color: #475569;
-    }
-    .anki-label {
-        font-weight: 600;
-        color: #334155;
-        font-size: 0.75rem;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-    }
-    .anki-card-meaning {
-        margin-top: 0.75rem;
-        font-size: 1.1rem;
-        font-weight: 600;
-        color: #1e293b;
-    }
-    .anki-card-usage {
-        margin-top: 0.5rem;
-        font-size: 0.8rem;
-        color: #64748b;
-        max-width: 340px;
-        line-height: 1.4;
-    }
-    .anki-card-tag {
-        margin-top: 1rem;
-        font-size: 0.65rem;
-        color: #94a3b8;
-        text-transform: uppercase;
-        letter-spacing: 0.1em;
-    }
-</style>
-</body>
+        <style is:global>
+            :root {
+                --paper: #fbfaf8;
+                --ink: #191917;
+                --ink-soft: #5f5e5a;
+                --line: #e7e4de;
+                --accent: #b3261e;
+            }
+            html {
+                background: var(--paper);
+                color: var(--ink);
+            }
+            body {
+                margin: 0;
+                font-family: 'InterVariable', system-ui, sans-serif;
+                font-size: 17px;
+                line-height: 1.6;
+                color: var(--ink);
+                background: var(--paper);
+            }
+            a {
+                color: inherit;
+            }
+            h1,
+            h2,
+            h3 {
+                font-family: 'Switzer-Semibold', 'InterVariable', sans-serif;
+                font-weight: 600;
+                letter-spacing: -0.01em;
+                margin: 0;
+            }
+            code {
+                font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+                font-size: 0.88em;
+            }
+            .page {
+                max-width: 1040px;
+                margin: 0 auto;
+                padding: 0 24px;
+            }
+            .dim {
+                color: var(--ink-soft);
+            }
+            .nav {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 24px 0;
+            }
+            .wordmark {
+                display: inline-flex;
+                align-items: center;
+                gap: 8px;
+                font-weight: 600;
+                text-decoration: none;
+            }
+            .nav-link,
+            .text-link {
+                color: var(--ink-soft);
+                text-decoration: none;
+            }
+            .nav-link:hover,
+            .text-link:hover {
+                color: var(--ink);
+            }
+            .hero {
+                display: grid;
+                grid-template-columns: 1.1fr 1fr;
+                gap: 64px;
+                align-items: center;
+                padding: 56px 0 88px;
+            }
+            .hero h1 {
+                font-size: clamp(2.2rem, 4.5vw, 3.3rem);
+                line-height: 1.08;
+            }
+            .lead {
+                margin: 20px 0 0;
+                max-width: 34em;
+                color: var(--ink-soft);
+                font-size: 1.1rem;
+            }
+            .actions {
+                display: flex;
+                align-items: center;
+                gap: 24px;
+                margin-top: 32px;
+            }
+            .button {
+                display: inline-block;
+                padding: 10px 18px;
+                border-radius: 8px;
+                background: var(--ink);
+                color: var(--paper);
+                text-decoration: none;
+                font-weight: 500;
+            }
+            .button:hover {
+                background: #000;
+            }
+            .fineprint {
+                margin: 20px 0 0;
+                font-size: 0.85rem;
+                color: var(--ink-soft);
+            }
+            .demo {
+                margin: 0;
+                perspective: 1200px;
+            }
+            .card {
+                position: relative;
+                height: 340px;
+                cursor: pointer;
+                transform-style: preserve-3d;
+                transition: transform 0.5s cubic-bezier(0.3, 0, 0.2, 1);
+                outline: none;
+            }
+            .card.flipped {
+                transform: rotateY(180deg);
+            }
+            .card:focus-visible .face {
+                box-shadow: 0 0 0 2px var(--ink);
+            }
+            .face {
+                position: absolute;
+                inset: 0;
+                display: flex;
+                flex-direction: column;
+                padding: 28px;
+                background: #fff;
+                border: 1px solid var(--line);
+                border-radius: 14px;
+                box-shadow: 0 1px 2px rgb(0 0 0 / 0.04);
+                backface-visibility: hidden;
+            }
+            .back {
+                transform: rotateY(180deg);
+            }
+            .label {
+                font-size: 0.75rem;
+                letter-spacing: 0.06em;
+                text-transform: uppercase;
+                color: var(--ink-soft);
+            }
+            .cue {
+                margin: auto 0 0;
+                font-family: 'Switzer-Semibold', sans-serif;
+                font-size: 1.9rem;
+                line-height: 1.2;
+            }
+            .context {
+                margin: 8px 0 auto;
+                color: var(--ink-soft);
+            }
+            .hint {
+                font-size: 0.8rem;
+                color: var(--ink-soft);
+            }
+            .answer {
+                display: flex;
+                align-items: center;
+                gap: 16px;
+                margin-top: 18px;
+            }
+            .l2 {
+                margin: 0;
+                font-size: 2.6rem;
+                line-height: 1.1;
+                font-weight: 500;
+            }
+            .play {
+                display: grid;
+                place-items: center;
+                width: 40px;
+                height: 40px;
+                border: 1px solid var(--line);
+                border-radius: 50%;
+                background: #fff;
+                color: var(--accent);
+                cursor: pointer;
+            }
+            .play:hover {
+                border-color: var(--accent);
+            }
+            .facts {
+                display: grid;
+                grid-template-columns: auto 1fr;
+                gap: 4px 16px;
+                margin: 20px 0 0;
+                font-size: 0.95rem;
+            }
+            .facts dt {
+                color: var(--ink-soft);
+            }
+            .facts dd {
+                margin: 0;
+            }
+            .usage {
+                margin: auto 0 0;
+                font-size: 0.9rem;
+                color: var(--ink-soft);
+            }
+            figcaption {
+                margin-top: 12px;
+                font-size: 0.85rem;
+                color: var(--ink-soft);
+            }
+            .section {
+                padding: 56px 0;
+                border-top: 1px solid var(--line);
+            }
+            .section h2 {
+                font-size: 1.5rem;
+            }
+            .section-lead {
+                max-width: 40em;
+                margin: 12px 0 0;
+                color: var(--ink-soft);
+            }
+            .section-lead a {
+                color: var(--ink);
+            }
+            .columns {
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 40px;
+                margin-top: 28px;
+            }
+            .columns h3 {
+                font-size: 1.05rem;
+            }
+            .columns p {
+                margin: 8px 0 0;
+                color: var(--ink-soft);
+            }
+            pre {
+                margin: 24px 0;
+                padding: 20px 24px;
+                overflow-x: auto;
+                background: #fff;
+                border: 1px solid var(--line);
+                border-radius: 10px;
+                line-height: 1.7;
+            }
+            .decks {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 0 40px;
+                margin: 24px 0 0;
+                padding: 0;
+                list-style: none;
+            }
+            .decks li {
+                display: flex;
+                justify-content: space-between;
+                padding: 10px 0;
+                border-bottom: 1px solid var(--line);
+            }
+            .footer {
+                display: flex;
+                justify-content: space-between;
+                padding: 32px 0 48px;
+                border-top: 1px solid var(--line);
+                font-size: 0.9rem;
+                color: var(--ink-soft);
+            }
+            @media (max-width: 820px) {
+                .hero {
+                    grid-template-columns: 1fr;
+                    gap: 40px;
+                    padding-top: 24px;
+                }
+                .columns,
+                .decks {
+                    grid-template-columns: 1fr;
+                }
+                .columns {
+                    gap: 24px;
+                }
+            }
+        </style>
+    </body>
 </html>

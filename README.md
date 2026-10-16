@@ -81,15 +81,15 @@ Changing the voice of a deck regenerates all of its audio on the next build.
 
 ## 🌍 Available decks
 
-| Deck                  | Language           | Cards | Voice                       |
-| --------------------- | ------------------ | ----- | --------------------------- |
-| `deDE-arSY-advanced`  | Arabic (Syria)     | 92    | ElevenLabs                  |
-| `deDE-frFR-advanced`  | French             | 96    | ElevenLabs                  |
-| `deDE-hiIN-essential` | Hindi              | 23    | Google Neural2              |
-| `deDE-jaJP`           | Japanese           | 69    | Google Neural2              |
-| `deDE-koKR`           | Korean             | 52    | Google Neural2              |
-| `deDE-trTR`           | Turkish            | 51    | ElevenLabs                  |
-| `deDE-zhCN`           | Mandarin (neutral) | 51    | Azure `zh-CN-YunyangNeural` |
+| Deck                 | Language           | Cards | Voice                       |
+| -------------------- | ------------------ | ----- | --------------------------- |
+| `deDE-arSY-advanced` | Arabic (Syria)     | 92    | ElevenLabs                  |
+| `deDE-frFR-advanced` | French             | 96    | ElevenLabs                  |
+| `deDE-hiIN`          | Hindi              | 48    | Azure `hi-IN-MadhurNeural`  |
+| `deDE-jaJP`          | Japanese           | 69    | Google Neural2              |
+| `deDE-koKR`          | Korean             | 52    | Google Neural2              |
+| `deDE-trTR`          | Turkish            | 51    | ElevenLabs                  |
+| `deDE-zhCN`          | Mandarin (neutral) | 51    | Azure `zh-CN-YunyangNeural` |
 
 All decks are for German speakers.
 
