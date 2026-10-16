@@ -8,12 +8,11 @@ Perfect for travelers who want to learn practical communication basics before vi
 
 ## 🚀 Features
 
-- 🎙️ **High-Quality TTS**: ElevenLabs, Google Neural2, or Azure Neural voices per language
+- 🤖 **One-command decks**: Gemini drafts a deck from [Prompt.md](generator/Prompt.md), then a second native-speaker review pass fixes unnatural phrases and pronunciations
+- 🎙️ **High-quality TTS**: Gemini, ElevenLabs, Azure or Google voices per deck
+- 📦 **Ready-to-import Anki package**: one `.apkg` with note type, card templates, styling and audio
 - 🧩 **Card-based deck model**: `single` and `ritual_pair` cards incl. IPA + simple pronunciation
-- 📚 **Anki Integration**: Unified CSV (20 fields) for one note type (production + recognition)
-- 🔄 **Pair decks**: One file contains learner L1 + target L2, context, usage, variants
-- 🎯 **Stable audio names**: Based on card IDs (incl. `__plural`, `__call`, `__response`)
-- ⚡ **Smart Generation**: Skips existing files, robust error handling
+- ♻️ **Up-to-date audio**: only new or changed phrases are synthesized; re-importing updates your notes instead of duplicating them
 
 ## 🧠 Why Anki works (science‑backed)
 
@@ -24,482 +23,94 @@ Anki pairs **active recall** (testing yourself) with **spaced repetition** (revi
 
 References: [BMC Medical Education — Anki users & outcomes](https://pmc.ncbi.nlm.nih.gov/articles/PMC10403443/), [International Journal of Medical Students — Spaced repetition](https://ijms.pitt.edu/IJMS/article/view/1549)
 
-## 📋 Deck model & coverage
-
-- A deck is a JavaScript module exporting `deck` with `learnerLang`, `targetLang`, `voice`, and `cards`.
-- Cards are either `single` (with optional polite/plural variant) or `ritual_pair` (call + fixed response).
-- Phrases cover greetings/politeness, introductions, communication, food & drink, navigation, shopping, emergencies, and numbers.
-
-## 🛠️ Installation & Setup
-
-### 1. Install
+## 🛠️ Setup
 
 ```bash
+cd generator
 pnpm install
+cp .env.example .env
 ```
 
-### 2. API Keys Setup
+Fill in the keys you need:
 
-Create a `.env` file (see `.env.example`).
+- **Gemini** (deck creation and Gemini voices): [Google AI Studio](https://aistudio.google.com/apikey)
+- **Google Cloud TTS**: [Cloud Console](https://console.cloud.google.com/) → enable Text-to-Speech API → create API key
+- **Azure**: [Speech Studio](https://speech.microsoft.com/) → create a Speech resource
+- **ElevenLabs**: [ElevenLabs](https://elevenlabs.io/) → create API key (paid plan required for library voices)
 
-### 3. Get API Keys
-
-- **Google**: [Cloud Console](https://console.cloud.google.com/) → Enable Text-to-Speech API → Create API Key
-- **Azure**: [Speech Studio](https://speech.microsoft.com/) → Create Speech resource
-- **ElevenLabs**: [ElevenLabs](https://elevenlabs.io/) → Create API Key (paid plan required for library voices)
+Requires Node.js 22.13 or newer.
 
 ## 🎯 Usage
 
-### Pair deck (recommended)
+### Build a deck
 
 ```bash
-# Generate from a pair deck (e.g., German→Turkish with context-aware cards)
-cd generator
 node generate.js deDE-trTR
 ```
 
-This produces a unified CSV and audio for that pair deck.
+This synthesizes missing or changed audio into `output/audio/deDE-trTR/` and writes `output/deDE-trTR.apkg`. Open that file with Anki (double-click or `File` → `Import`) and you are done: note type, both card templates, styling and audio come with it.
 
-### Bulk generation
+Run `node generate.js` without arguments to list all decks.
 
-```bash
-node generate.js --all-from deDE     # German to ALL languages
-node generate.js --all               # Generate ALL combinations
-```
-
-### Build Audio ZIP Files
-
-After generating audio files, you can compress them into language-specific ZIP files for distribution:
+### Create a new deck
 
 ```bash
-# Build ZIPs for all languages (removes original MP3 files after compression)
-npm run build-zips
-
-# Or use the script directly
-node build-audio-zips.js
-
-# Build ZIP for specific language(s)
-node build-audio-zips.js trTR
-node build-audio-zips.js deDE frFR esES
+node generate.js new --target zh-CN --region Beijing --provider azure --voice zh-CN-XiaoxiaoNeural
 ```
 
-**What this does:**
+| Option       | Default    | Description                                   |
+| ------------ | ---------- | --------------------------------------------- |
+| `--target`   | (required) | Target language, e.g. `tr-TR`, `zh-CN`        |
+| `--region`   | (required) | Where the phrases should sound native         |
+| `--learner`  | `de-DE`    | Language of cues and explanations             |
+| `--level`    | `standard` | `essentials`, `standard` or `advanced`        |
+| `--provider` | `gemini`   | `gemini`, `google`, `azure` or `elevenlabs`   |
+| `--voice`    | `Kore`     | Voice name or id, required for non-Gemini TTS |
 
-- Creates `audio-{languageCode}.zip` files in the `output/audio/` directory
-- Each ZIP contains all MP3 files for that target language
-- **Removes** the original MP3 files after successful compression
-- Perfect for creating release assets or distributing audio files
+The deck is saved as `decks/<learner>-<target>[-level].json` and the review pass prints what it changed. Read through the cards, adjust anything you like, then build it.
+Set `GEMINI_MODEL` in `.env` to use a different Gemini model for deck creation.
 
-**Example output:**
+### Choosing a voice
 
-```
-output/audio/
-├── audio-deDE.zip     # All German audio files
-├── audio-trTR.zip     # All Turkish audio files
-├── audio-frFR.zip     # All French audio files
-└── ...
-```
+- **Gemini** (`gemini-3.8-flash-tts`): very natural, steered by the `style` text in the deck's `tts` config. Voices: [Gemini speech generation](https://ai.google.dev/gemini-api/docs/speech-generation#voices)
+- **ElevenLabs**: excellent for most European languages and Turkish/Arabic. Voices: [voice library](https://elevenlabs.io/voice-library)
+- **Azure**: the most reliable choice for Mandarin tones in current benchmarks. Voices: [language support](https://learn.microsoft.com/azure/ai-services/speech-service/language-support?tabs=tts)
+- **Google Cloud TTS**: Neural2 and Chirp3-HD voices. Voices: [voice list](https://cloud.google.com/text-to-speech/docs/list-voices-and-types)
 
-### List Available Decks
+Changing the voice of a deck regenerates all of its audio on the next build.
 
-```bash
-node generate.js
-```
+## 📋 Deck format
 
-## 📁 Output Structure
+A deck is a JSON file in `generator/decks/`:
 
-```
-output/
-├── audio/
-│   └── deDE-trTR/                          # Audio per deck
-│       ├── deDE-trTR_hello_merhaba.mp3
-│       ├── deDE-trTR_thanks_tesekkurler.mp3
-│       ├── deDE-trTR_welcome_ritual__call.mp3
-│       └── deDE-trTR_welcome_ritual__response.mp3
-└── decks/
-    └── deDE-trTR/
-        └── anki_unified.csv                # Unified CSV (20 fields)
+```json
+{
+    "learnerLang": "de-DE",
+    "targetLang": "tr-TR",
+    "tts": { "provider": "elevenlabs", "voice": "ctoYieZ4J7WwcdhujpMq" },
+    "cards": []
+}
 ```
 
-### Unified CSV (20 columns)
+- `tts` takes `provider` and `voice`, plus optional `model`, `style` (Gemini) and `voice_settings` (ElevenLabs).
+- Cards are either `single` (with optional polite/plural variant) or `ritual_pair` (call + fixed response). The exact fields are described in [Prompt.md](generator/Prompt.md).
+- Card ids are stable: they name the audio files and identify notes in Anki, so keep them when editing a card.
 
-- File: `output/decks/<pair>/anki_unified.csv`
-- Fields: see the Anki Import tutorial below (Step 2/3) for the exact order and mapping.
+## 🃏 Card types in Anki
 
-## 📊 Dual IPA Pronunciation System
+- **Say it**: always generated, trains producing the phrase (L1 → L2). For rituals it asks for the response.
+- **Understand it**: only for ritual pairs, trains recognizing what you hear (L2 → L1) and how to answer.
 
-Choose your preferred IPA format when importing to Anki:
+You need to both say and understand greetings, but you only need to say "Where is the toilet?" — you won't hear others asking you that.
 
-### Option 1: Full IPA (Column 4)
+## 📊 Two pronunciation aids
 
-- **Format**: Complete International Phonetic Alphabet with all diacritics
-- **Examples**:
-    - German "Hallo" → `/ˈhaloː/`
-    - French "Bonjour" → `/bɔ̃ˈʒuʁ/`
-    - Japanese "Konnichiwa" → `/konnitʃiwa/`
-- **Best for**: Linguists, precise pronunciation, advanced learners
+Every card shows both:
 
-### Option 2: Simplified IPA (Column 5)
-
-- **Format**: IPA using basic symbols with hyphens for syllable breaks
-- **Examples**:
-    - German "Hallo" → `/ˈha-lo/`
-    - French "Bonjour" → `/bon-ˈʒur/`
-    - Japanese "Konnichiwa" → `/kon-ni-tʃi-wa/`
-- **Best for**: Most learners, easier to read, still internationally standardized
-
-## 📲 Anki Import Tutorial
-
-### Step 1: Copy Audio Files
-
-1. Open Anki → `Tools` → `Add-ons` → `View Files`
-2. Go up one level to the `Anki2` (or profile) folder
-3. Open your profile folder (e.g. `User 1`) and then the `collection.media/` folder
-4. Copy all files from the `output/audio/` directory directly into `collection.media/`
-
----
-
-### Step 2: Create Note Type
-
-1. In Anki, go to `Tools` → `Manage Note Types` → `Add` → choose **Basic**
-2. Name it e.g. **"Vacation PhraseCard"**
-3. Click `Fields...` and **delete** any existing fields
-4. Create these fields in **this exact order**:
-    1. `Cue_L1`
-    2. `Context_L1`
-    3. `L2`
-    4. `Pron_IPA`
-    5. `Pron_Simple`
-    6. `Meaning_L1`
-    7. `Literal_L1`
-    8. `Usage_L1`
-    9. `VarPlural_L2`
-    10. `VarPlural_IPA`
-    11. `VarPlural_Simple`
-    12. `Resp_L2`
-    13. `Resp_Pron_IPA`
-    14. `Resp_Pron_Simple`
-    15. `Resp_Meaning_L1`
-    16. `Notes_L1`
-    17. `Audio_L2`
-    18. `Audio_VarPlural`
-    19. `Audio_Resp`
-    20. `Tags`
-
-5. Click **Close** to save the fields.
-
----
-
-### Step 3: Import CSV
-
-1. Go to `File` → `Import...` → select your generated `anki_unified.csv`
-2. Settings:
-    - **Type**: `Vacation PhraseCard` (or whatever name you chose)
-    - **Fields separated by**: `Semicolon`
-    - ✅ **Allow HTML in fields**
-3. Map columns to fields in this order:
-    1. `Cue_L1`
-    2. `Context_L1`
-    3. `L2`
-    4. `Pron_IPA`
-    5. `Pron_Simple`
-    6. `Meaning_L1`
-    7. `Literal_L1`
-    8. `Usage_L1`
-    9. `VarPlural_L2`
-    10. `VarPlural_IPA`
-    11. `VarPlural_Simple`
-    12. `Resp_L2`
-    13. `Resp_Pron_IPA`
-    14. `Resp_Pron_Simple`
-    15. `Resp_Meaning_L1`
-    16. `Notes_L1`
-    17. `Audio_L2`
-    18. `Audio_VarPlural`
-    19. `Audio_Resp`
-    20. `Tags`
-
-4. Finish the import.
-5. (Optional) If the header row was imported as a note, open `Browse`, select the deck, delete the first note.
-
----
-
-### Step 4: Set Up Card Templates
-
-Open `Tools` → `Manage Note Types` → select **Vacation PhraseCard** → `Cards...`.
-
-You’ll create **two card types** inside this **one** note type.
-
-**Important:** This note type creates **two card types**, but Card 2 only generates for **ritual pairs** (greetings, responses). For regular phrases that you only need to **produce** (like "Where is the bathroom?"), only Card 1 is created.
-
-- **Card 1 – "Say it"**: Always generated - trains you to produce phrases (L1 → L2)
-- **Card 2 – "Understand it"**: Only for rituals - trains recognition when someone speaks to you (L2 → L1)
-
-This is intentional: you need to both say AND understand greetings, but you only need to say "Where is the toilet?" (you won't hear others asking you that!).
-
-Open `Tools` → `Manage Note Types` → select **Vacation PhraseCard** → `Cards...`.
-
-You'll create **two card types** inside this **one** note type.
-
-#### Card 1 – “Say it” (production)
-
-This card trains you to **produce** the phrase (L1 → L2).  
-For rituals, it focuses on the **response** (what you say back).
-
-**Card 1 – Front Template:**
-
-```html
-{{#Resp_L2}}
-<!-- RITUAL: focus on the response, audio is fine here -->
-<div class="cue">Someone says to you: “{{L2}}” – how do you respond?</div>
-<div class="context">{{Context_L1}}</div>
-
-{{#Audio_L2}}
-<div class="audio">{{Audio_L2}}</div>
-{{/Audio_L2}} {{/Resp_L2}} {{^Resp_L2}}
-<!-- NORMAL PHRASE: L1 → L2, NO AUDIO HERE -->
-<div class="cue">{{Cue_L1}}</div>
-<div class="context">{{Context_L1}}</div>
-{{/Resp_L2}}
-```
-
-**Card 1 – Back Template:**
-
-```html
-{{#Resp_L2}}
-<!-- RITUAL: show the response as the main answer -->
-<div class="l2">{{Resp_L2}}</div>
-<div class="audio">{{Audio_Resp}}</div>
-
-<div class="block">
-    <b>IPA:</b> {{Resp_Pron_IPA}} &nbsp; | &nbsp;
-    <b>Simple:</b> {{Resp_Pron_Simple}}
-</div>
-
-<div class="block"><b>Meaning:</b> {{Resp_Meaning_L1}}</div>
-
-<div class="block"><b>Situation:</b> {{Usage_L1}}</div>
-
-<hr />
-<div class="block"><b>What you usually hear first:</b></div>
-<div class="l2">{{L2}}</div>
-<div class="audio">{{Audio_L2}}</div>
-<div class="block">
-    <b>Call – IPA:</b> {{Pron_IPA}} &nbsp; | &nbsp;
-    <b>Simple:</b> {{Pron_Simple}}
-</div>
-<div class="block"><b>Call – meaning:</b> {{Meaning_L1}}</div>
-{{/Resp_L2}} {{^Resp_L2}}
-<!-- NORMAL PHRASE -->
-<div class="l2">{{L2}}</div>
-<div class="audio">{{Audio_L2}}</div>
-
-<div class="block">
-    <b>IPA:</b> {{Pron_IPA}} &nbsp; | &nbsp; <b>Simple:</b> {{Pron_Simple}}
-</div>
-
-<div class="block"><b>Meaning:</b> {{Meaning_L1}}</div>
-
-{{#Literal_L1}}
-<div class="block"><b>Literal:</b> {{Literal_L1}}</div>
-{{/Literal_L1}}
-
-<div class="block"><b>Usage:</b> {{Usage_L1}}</div>
-
-{{#VarPlural_L2}}
-<hr />
-<div class="variant">
-    <div><b>Polite/plural variant:</b> {{VarPlural_L2}}</div>
-    <div class="audio">{{Audio_VarPlural}}</div>
-    <div>
-        <b>IPA:</b> {{VarPlural_IPA}} &nbsp; | &nbsp;
-        <b>Simple:</b> {{VarPlural_Simple}}
-    </div>
-</div>
-{{/VarPlural_L2}} {{/Resp_L2}} {{#Notes_L1}}
-<hr />
-<div class="notes">{{Notes_L1}}</div>
-{{/Notes_L1}}
-
-<div class="tags">{{Tags}}</div>
-```
-
-**Card 2 – “Understand it” (recognition)**
-This card trains you to understand what you hear (L2 → meaning).
-For rituals, it shows the call and how to respond.
-
-Use the “Add Card Type…” button in the Cards... dialog to create Card 2, then paste:
-
-**Card 2 – Front Template:**
-
-```html
-{{#Resp_L2}}
-<!-- RITUAL ONLY: recognize the call and learn the response -->
-<div class="l2">{{L2}}</div>
-<div class="audio">{{Audio_L2}}</div>
-<div class="context">What does this mean, and how do you respond?</div>
-{{/Resp_L2}}
-```
-
-**Card 2 – Back Template:**
-
-```html
-{{#Resp_L2}}
-<!-- RITUAL: show meaning + response -->
-<div class="block"><b>Meaning:</b> {{Meaning_L1}}</div>
-
-{{#Usage_L1}}
-<div class="block"><b>Usage:</b> {{Usage_L1}}</div>
-{{/Usage_L1}}
-
-<hr />
-<div class="block"><b>Typical response:</b></div>
-<div class="l2">{{Resp_L2}}</div>
-<div class="audio">{{Audio_Resp}}</div>
-
-<div class="block">
-    <b>Response – IPA:</b> {{Resp_Pron_IPA}} &nbsp; | &nbsp;
-    <b>Simple:</b> {{Resp_Pron_Simple}}
-</div>
-<div class="block"><b>Response meaning:</b> {{Resp_Meaning_L1}}</div>
-{{/Resp_L2}} {{^Resp_L2}}
-<!-- NORMAL PHRASE -->
-<div class="block"><b>Meaning:</b> {{Meaning_L1}}</div>
-
-{{#Usage_L1}}
-<div class="block"><b>Usage:</b> {{Usage_L1}}</div>
-{{/Usage_L1}} {{#VarPlural_L2}}
-<hr />
-<div class="variant">
-    <div><b>Polite/plural variant:</b> {{VarPlural_L2}}</div>
-    <div class="audio">{{Audio_VarPlural}}</div>
-    <div>
-        <b>IPA:</b> {{VarPlural_IPA}} &nbsp; | &nbsp;
-        <b>Simple:</b> {{VarPlural_Simple}}
-    </div>
-</div>
-{{/VarPlural_L2}} {{/Resp_L2}} {{#Notes_L1}}
-<hr />
-<div class="notes">{{Notes_L1}}</div>
-{{/Notes_L1}}
-
-<div class="tags">{{Tags}}</div>
-```
-
-**Step 5: Styling**
-In the same `Cards...` dialog, open the Styling tab and paste:
-
-```html
-.cue { font-size: 1.4em; font-weight: 600; margin-bottom: 4px; } .context {
-color: #666; font-size: 0.95em; margin-bottom: 10px; } .l2 { font-size: 1.8em;
-font-weight: 700; margin: 4px 0; } .audio { margin: 6px 0; } .block { margin:
-6px 0; } .variant { margin-top: 6px; } .notes { font-size: 0.9em; color: #666;
-font-style: italic; margin-top: 8px; } .tags { font-size: 0.75em; color: #aaa;
-margin-top: 6px; } hr { border: none; border-top: 1px solid #ddd; margin: 10px
-0; }
-```
-
-Click `Save / Close`.
-From now on, every CSV you generate can be imported directly into this single note type, and all cards will behave correctly for both speaking and understanding your vacation phrases.
-
-## 🔧 Adding New Pair Decks
-
-### Step 1: Choose Your Language & Voice
-
-1. **Research Available Voices:**
-    - Check [Azure Speech voices](https://learn.microsoft.com/azure/ai-services/speech-service/language-support?tabs=tts) (Neural voices)
-    - If needed, check [Google Cloud TTS voices](https://cloud.google.com/text-to-speech/docs/list-voices-and-types)
-    - Prefer premium Neural quality; e.g., for Turkish we use `tr-TR-EmelNeural` (Azure)
-
-2. **Determine Language Code:**
-    - Use ISO format: `language-COUNTRY` (e.g., `tr-TR` for Turkish Turkey)
-    - Create deck code: Remove hyphens and capitalize (e.g., `trTR`)
-
-### Step 2: Generate Pair Deck Using AI
-
-1. **Use the AI Prompt:**
-    - Open [Prompt.md](generator/Prompt.md) and copy the entire content
-    - Fill in TARGET/LEARNER settings at the top
-    - Paste into your LLM and follow the instructions to produce the `deck` module (with `cards`)
-
-2. **Focus Areas for Authenticity:**
-    - **Formality level**: How locals actually greet strangers vs friends
-    - **Common expressions**: Regional variants and colloquialisms
-    - **Cultural context**: Payment customs, social norms, emergency protocols
-    - **Gendered language**: Add notes for masculine/feminine variants
-
-### Step 3: Create Pair Deck File
-
-1. **Save the generated code** as `generator/languages/<L1L2>.js` (e.g., `generator/languages/deDE-trTR.js`)
-2. **Validate the structure**:
-    - `export const deck = { learnerLang, targetLang, provider, voice, cards: [...] }`
-    - Cards are `single` or `ritual_pair` and include IPA + simple pronunciation
-    - Use stable `id` values; variants use `variant_plural`; rituals use call/response fields
-
-### Step 4: Register the Pair Deck
-
-Add your new pair deck to `generator/data.js`:
-
-```javascript
-import { deck as deDE_trTR } from './languages/deDE-trTR.js';
-
-export const decks = {
-    'deDE-trTR': deDE_trTR,
-};
-```
-
-### Step 5: Test Your Pair Deck
-
-1. **Test audio generation:**
-
-    ```bash
-    node generate.js deDE-trTR
-    ```
-
-2. **Verify output:**
-
-- Audio files created in `output/audio/` with `deDE-trTR_` prefix
-- Unified CSV generated in `output/decks/deDE-trTR/anki_unified.csv`
-    - Listen to audio samples for quality
-
-### Step 6: Update Documentation
-
-1. **Add to language table** in README (alphabetically by language name)
-2. **Add authenticity notes** in the Language Authenticity section
-3. **Test a few deck combinations** to ensure everything works
-
-### Example: Turkish (de→tr pair deck)
-
-```javascript
-// generator/languages/deDE-trTR.js
-export const deck = {
-    learnerLang: 'de-DE',
-    targetLang: 'tr-TR',
-    provider: 'elevenlabs',
-    voice: { voiceId: 'ctoYieZ4J7WwcdhujpMq' },
-    cards: [
-        /* single + ritual_pair cards with pronunciations */
-    ],
-};
-```
-
-### Voice Provider Guidelines:
-
-- **ElevenLabs**: Best quality, large voice library (requires paid plan for library voices via API)
-- **Google Cloud TTS**: Free tier, excellent Neural2 voices, great for Asian languages
-- **Azure Speech**: Alternative when others don't support the language well
-- **Set provider field**: `'google'`, `'azure'`, or `'elevenlabs'` in the deck config
+- **IPA**: full International Phonetic Alphabet with stress, e.g. Turkish "Merhaba" → `ˈmɛɾhaba`
+- **Simple**: a spelling that is easy to read for the learner, e.g. `mer-ha-ba`. For tonal languages this is the standard romanization with tone marks, e.g. Mandarin "你好" → `nǐ hǎo`
 
 ## 🌟 Language Authenticity
 
 We are focusing on actually used phrases instead of using the ones learned in school.
 The goal is to not immediately sound like a foreigner :D
-
----
-
-## 🎵 Audio Management
-
-- **Per-deck folders**: Audio in `generator/output/audio/<deckName>/`
-- **Stable Names**: `<deckName>_<cardId>.mp3`, variants `__plural`, rituals `__call`/`__response`
-- **Efficient Storage**: Files are skipped if already present
-- **Smart Generation**: Resilient synthesis with provider-aware config

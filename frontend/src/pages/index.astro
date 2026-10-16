@@ -52,16 +52,16 @@ const repoUrl = 'https://github.com/lorenzpfei/anki-vacation-tts';
                 Skip the Textbook.<br/>Master Travel Talk.
             </h1>
             <p class="mt-3 max-w-prose text-lg text-[--muted]">
-                {tagline} Generate audio flashcards with authentic, colloquial travel phrases, high-quality TTS, and Anki-ready CSV — for any language.
+                {tagline} Generate audio flashcards with authentic, colloquial travel phrases, high-quality TTS, and a ready-to-import Anki deck — for any language.
             </p>
             <div class="mt-6 flex flex-wrap items-center gap-3">
                 <a href="#how-it-works" class="btn btn-primary">How it works →</a>
                 <a href={repoUrl} class="btn btn-ghost" rel="noopener noreferrer">Star on GitHub</a>
             </div>
             <ul class="mt-8 grid max-w-xl grid-cols-2 gap-2 text-sm text-[--muted]">
-                <li class="flex items-center gap-2"><span class="text-base">🎙️</span> ElevenLabs + Google Neural2 TTS</li>
-                <li class="flex items-center gap-2"><span class="text-base">🌍</span> Any language via AI prompt</li>
-                <li class="flex items-center gap-2"><span class="text-base">📚</span> Anki CSV + audio</li>
+                <li class="flex items-center gap-2"><span class="text-base">🎙️</span> Gemini, ElevenLabs, Azure + Google TTS</li>
+                <li class="flex items-center gap-2"><span class="text-base">🌍</span> Any language, drafted by AI</li>
+                <li class="flex items-center gap-2"><span class="text-base">📚</span> One .apkg file with audio</li>
                 <li class="flex items-center gap-2"><span class="text-base">⚡</span> Smart, idempotent generation</li>
             </ul>
         </div>
@@ -158,17 +158,17 @@ const repoUrl = 'https://github.com/lorenzpfei/anki-vacation-tts';
             <article class="feature">
                 <div class="feature-icon">🌍</div>
                 <h3 class="feature-title">Any language</h3>
-                <p class="feature-copy">Use the included AI prompt with any LLM to generate decks for your target language.</p>
+                <p class="feature-copy">One command drafts a deck for your target language with Gemini, then has it reviewed by a native-speaker pass.</p>
             </article>
             <article class="feature">
                 <div class="feature-icon">🔊</div>
                 <h3 class="feature-title">Premium voices</h3>
-                <p class="feature-copy">ElevenLabs, Google Neural2, or Azure Neural — configurable per deck.</p>
+                <p class="feature-copy">Gemini, ElevenLabs, Azure, or Google — configurable per deck.</p>
             </article>
             <article class="feature">
                 <div class="feature-icon">📚</div>
                 <h3 class="feature-title">Anki-ready</h3>
-                <p class="feature-copy">Unified 20-column CSV with one note type for both production and recognition cards.</p>
+                <p class="feature-copy">A single .apkg with note type, card templates and audio for both production and recognition cards.</p>
             </article>
         </div>
     </div>
@@ -181,17 +181,17 @@ const repoUrl = 'https://github.com/lorenzpfei/anki-vacation-tts';
         <li class="step">
             <div class="step-num">1</div>
             <h4 class="step-title">Clone & setup</h4>
-            <p class="step-copy">Clone the repo, run <code>pnpm install</code>, add your TTS API keys to <code>.env</code>.</p>
+            <p class="step-copy">Clone the repo, run <code>pnpm install</code>, add your API keys to <code>.env</code>.</p>
         </li>
         <li class="step">
             <div class="step-num">2</div>
             <h4 class="step-title">Generate a deck</h4>
-            <p class="step-copy">Copy <code>Prompt.md</code> into any LLM. Pick your language and level (essential, standard, or advanced). Save the output as a deck file.</p>
+            <p class="step-copy">Run <code>node generate.js new --target zh-CN --region Beijing</code>. Pick a level (essentials, standard, or advanced).</p>
         </li>
         <li class="step">
             <div class="step-num">3</div>
             <h4 class="step-title">Build & import</h4>
-            <p class="step-copy">Run <code>node generate.js &lt;deck&gt;</code>. Copy audio into Anki, import the CSV, and start learning.</p>
+            <p class="step-copy">Run <code>node generate.js &lt;deck&gt;</code>, open the generated <code>.apkg</code> in Anki, and start learning.</p>
         </li>
     </ol>
     <div class="mt-6">

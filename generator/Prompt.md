@@ -1,17 +1,15 @@
-TARGET_LANGUAGE_NAME = "<e.g. German, Turkish, Brazilian Portuguese, Japanese>"
-TARGET_LANG_CODE = "<e.g. de-DE, tr-TR, pt-BR, ja-JP>"
-TARGET_REGION = "<e.g. Berlin, Istanbul, São Paulo, Tokyo>"
+TARGET_LANGUAGE_NAME = "{{targetName}}"
+TARGET_LANG_CODE = "{{targetLang}}"
+TARGET_REGION = "{{region}}"
 
-LEARNER_LANGUAGE_NAME = "<e.g. German, English>"
-LEARNER_LANG_CODE = "<e.g. de-DE, en-US>"
+LEARNER_LANGUAGE_NAME = "{{learnerName}}"
+LEARNER_LANG_CODE = "{{learnerLang}}"
 
-DECK_LEVEL = "STANDARD"
-
-# Options: "ESSENTIALS" | "STANDARD" | "ADVANCED"
+DECK_LEVEL = "{{level}}"
 
 # ESSENTIALS: ~20-30 cards, absolute survival phrases only
 
-# STANDARD: ~40-60 cards, normal 1-week tourist needs (recommended default)
+# STANDARD: ~40-60 cards, normal 1-week tourist needs
 
 # ADVANCED: ~80-100 cards, longer stays, deeper language learning
 
@@ -23,7 +21,7 @@ You are an expert linguist and a native speaker of the TARGET_LANGUAGE_NAME from
 
 Your learners are native speakers of LEARNER_LANGUAGE_NAME (LEARNER_LANG_CODE).
 
-Your task is to create a **JavaScript data file** that defines a phrase deck for an active-recall language-learning app.
+Your task is to create a **JSON object** that defines a phrase deck for an active-recall language-learning app.
 
 The app will show learners a prompt in LEARNER_LANGUAGE_NAME and ask them to **produce the phrase in the target language**, and then listen to it via TTS.
 
@@ -130,6 +128,8 @@ For **every target-language phrase** (including responses and variants) you MUST
 
 - `pronunciation_ipa`: full IPA transcription, with correct phonemes and stress.
 - `pronunciation_simple`: a simplified transcription using basic Latin letters and hyphens that is easy for LEARNER_LANGUAGE_NAME speakers to read.
+
+For tonal languages (e.g. Mandarin), `pronunciation_simple` MUST be the standard romanization with tone marks as in textbooks (e.g. pinyin `nǐ hǎo`, with 一 and 不 marked in their spoken tone), because learners cannot recover tones from any other spelling.
 
 No phrase may be missing these fields.
 
@@ -309,26 +309,9 @@ You do not need a fixed number of cards per domain, but every domain must be **r
 
 ---
 
-## OUTPUT FORMAT (JAVASCRIPT MODULE)
+## OUTPUT FORMAT (JSON)
 
-Return a single JavaScript module that exports one deck object.
-
-Deck-level structure:
-
-```javascript
-export const deck = {
-    learnerLang: '<LEARNER_LANG_CODE>', // from the settings at the top
-    targetLang: '<TARGET_LANG_CODE>', // from the settings at the top
-    provider: 'google' || 'azure',
-    voice: {
-        name: '...', // e.g. a Google Neural2 or Azure Neural voice for the target language
-        ssmlGender: 'MALE' || 'FEMALE',
-    },
-    cards: [
-        // cards go here
-    ],
-};
-```
+Return a single JSON object of the form `{ "cards": [ ... ] }`.
 
 For every target-language phrase (including responses and variants) you MUST provide:
 
@@ -341,7 +324,7 @@ You must use these two shapes:
 
 ```typescript
 type SingleCard = {
-    id: string; // stable id, e.g. 'thanks_main', 'hello_casual'
+    id: string; // stable id in [a-z0-9_], e.g. 'thanks_main', 'hello_casual'
     type: 'single';
     category: string; // e.g. 'greeting','thanks','ritual','food','shopping','number','communication'...
     cue_L1: string; // prompt in LEARNER_LANGUAGE_NAME, e.g. "Thanks (casual, to friends)"

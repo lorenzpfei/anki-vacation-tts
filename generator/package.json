@@ -1,12 +1,14 @@
 {
+    "type": "module",
+    "engines": {
+        "node": ">=22.13.0"
+    },
     "scripts": {
-        "build-zips": "node build-audio-zips.js",
-        "build-zip": "node build-audio-zips.js"
+        "test": "node --test"
     },
     "dependencies": {
-        "@elevenlabs/elevenlabs-js": "^2.31.0",
-        "@google-cloud/text-to-speech": "^6.2.0",
+        "@breezystack/lamejs": "^1.2.7",
         "dotenv": "^17.2.1",
-        "microsoft-cognitiveservices-speech-sdk": "^1.45.0"
+        "fflate": "^0.8.3"
     }
 }
