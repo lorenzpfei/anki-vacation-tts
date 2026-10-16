@@ -73,7 +73,7 @@ Deck creation uses `gemini-4-argon`; set `GEMINI_MODEL` in `.env` to use a diffe
 ### Choosing a voice
 
 - **Gemini** (`gemini-3.8-flash-tts`): very natural, steered by the `style` text in the deck's `tts` config. Voices: [Gemini speech generation](https://ai.google.dev/gemini-api/docs/speech-generation#voices)
-- **ElevenLabs**: excellent for most European languages and Turkish/Arabic. Voices: [voice library](https://elevenlabs.io/voice-library)
+- **ElevenLabs** (`eleven_v4_turbo` by default): excellent for most European languages and Turkish/Arabic. Voices: [voice library](https://elevenlabs.io/voice-library)
 - **Azure**: the most reliable choice for Mandarin tones in current benchmarks; the Mandarin deck uses `zh-CN-YunyangNeural`. Clips get a short silence before and after so they don't start abruptly in Anki. HD (DragonHD) voices are only available in some regions. Voices: [language support](https://learn.microsoft.com/azure/ai-services/speech-service/language-support?tabs=tts)
 - **Google Cloud TTS**: Neural2 and Chirp3-HD voices. Voices: [voice list](https://cloud.google.com/text-to-speech/docs/list-voices-and-types)
 
@@ -81,15 +81,15 @@ Changing the voice of a deck regenerates all of its audio on the next build.
 
 ## 🌍 Available decks
 
-| Deck                 | Language           | Cards | Voice                       |
-| -------------------- | ------------------ | ----- | --------------------------- |
-| `deDE-arSY-advanced` | Arabic (Syria)     | 92    | ElevenLabs                  |
-| `deDE-frFR-advanced` | French             | 96    | ElevenLabs                  |
-| `deDE-hiIN`          | Hindi              | 48    | Azure `hi-IN-MadhurNeural`  |
-| `deDE-jaJP`          | Japanese           | 69    | Google Neural2              |
-| `deDE-koKR`          | Korean             | 52    | Google Neural2              |
-| `deDE-trTR`          | Turkish            | 51    | ElevenLabs                  |
-| `deDE-zhCN`          | Mandarin (neutral) | 51    | Azure `zh-CN-YunyangNeural` |
+| Deck                 | Language        | Cards | Voice                       |
+| -------------------- | --------------- | ----- | --------------------------- |
+| `deDE-arSY-advanced` | Arabic (Syrian) | 102   | ElevenLabs                  |
+| `deDE-frFR-advanced` | French          | 89    | ElevenLabs                  |
+| `deDE-hiIN`          | Hindi           | 48    | Azure `hi-IN-MadhurNeural`  |
+| `deDE-jaJP`          | Japanese        | 47    | Azure `ja-JP-KeitaNeural`   |
+| `deDE-koKR`          | Korean          | 47    | Azure `ko-KR-InJoonNeural`  |
+| `deDE-trTR`          | Turkish         | 51    | ElevenLabs                  |
+| `deDE-zhCN`          | Mandarin        | 51    | Azure `zh-CN-YunyangNeural` |
 
 All decks are for German speakers.
 

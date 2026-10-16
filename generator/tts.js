@@ -3,7 +3,7 @@ import { apiKey, post } from './http.js';
 
 const GEMINI_MODEL = 'gemini-3.8-flash-tts';
 const GEMINI_SAMPLE_RATE = 24000;
-const ELEVENLABS_MODEL = 'eleven_multilingual_v2';
+const ELEVENLABS_MODEL = 'eleven_v4_turbo';
 
 function wavSamples(wav) {
     const view = new DataView(wav.buffer, wav.byteOffset, wav.byteLength);
