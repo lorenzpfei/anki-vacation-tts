@@ -102,7 +102,7 @@ async function speakAzure(text, tts) {
             'ocp-apim-subscription-key': apiKey('AZURE_SPEECH_KEY'),
             'x-microsoft-outputformat': 'audio-24khz-160kbitrate-mono-mp3',
         },
-        `<speak version="1.0" xml:lang="${lang}"><voice name="${tts.voice}">${escapeXml(text)}</voice></speak>`
+        `<speak version="1.0" xmlns:mstts="http://www.w3.org/2001/mstts" xml:lang="${lang}"><voice name="${tts.voice}"><mstts:silence type="Leading-exact" value="300ms"/><mstts:silence type="Tailing-exact" value="300ms"/><prosody rate="${tts.rate ?? '0%'}">${escapeXml(text)}</prosody></voice></speak>`
     );
     return Buffer.from(await response.arrayBuffer());
 }

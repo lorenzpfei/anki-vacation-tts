@@ -68,13 +68,13 @@ test('gemini converts the returned wav to mp3 and sends the style', async () => 
     assert.deepEqual(body.generation_config.speech_config, [{ voice: 'Kore' }]);
 });
 
-test('azure sends escaped ssml for the voice locale', async () => {
+test('azure sends escaped ssml with rate and padding', async () => {
     process.env.AZURE_SPEECH_KEY = 'key';
     process.env.AZURE_SPEECH_REGION = 'westeurope';
     const calls = mockFetch(() => new Response(Buffer.from('mp3')));
     const speak = speakerFor({
         targetLang: 'zh-CN',
-        tts: { provider: 'azure', voice: 'zh-CN-XiaoxiaoNeural' },
+        tts: { provider: 'azure', voice: 'zh-CN-YunxiNeural', rate: '-20%' },
     });
 
     assert.equal((await speak('A & B')).toString(), 'mp3');
@@ -84,7 +84,7 @@ test('azure sends escaped ssml for the voice locale', async () => {
     );
     assert.equal(
         calls[0].body,
-        '<speak version="1.0" xml:lang="zh-CN"><voice name="zh-CN-XiaoxiaoNeural">A &#38; B</voice></speak>'
+        '<speak version="1.0" xmlns:mstts="http://www.w3.org/2001/mstts" xml:lang="zh-CN"><voice name="zh-CN-YunxiNeural"><mstts:silence type="Leading-exact" value="300ms"/><mstts:silence type="Tailing-exact" value="300ms"/><prosody rate="-20%">A &#38; B</prosody></voice></speak>'
     );
 });
 
