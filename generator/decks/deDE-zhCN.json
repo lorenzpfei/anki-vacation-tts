@@ -4,7 +4,7 @@
     "region": "mainland China (neutral standard Putonghua understood nationwide, no Beijing-specific erhua or regional slang)",
     "tts": {
         "provider": "azure",
-        "voice": "zh-CN-XiaoxiaoNeural"
+        "voice": "zh-CN-YunyangNeural"
     },
     "cards": [
         {
