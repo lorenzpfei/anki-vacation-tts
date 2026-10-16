@@ -35,7 +35,7 @@ Fill in the keys you need:
 
 - **Gemini** (deck creation and Gemini voices): [Google AI Studio](https://aistudio.google.com/apikey)
 - **Google Cloud TTS**: [Cloud Console](https://console.cloud.google.com/) → enable Text-to-Speech API → create API key
-- **Azure**: [Speech Studio](https://speech.microsoft.com/) → create a Speech resource
+- **Azure**: [create a Speech resource](https://portal.azure.com/#create/Microsoft.CognitiveServicesSpeechServices) with pricing tier `Free F0`, then copy `KEY 1` and the location from `Keys and Endpoint`
 - **ElevenLabs**: [ElevenLabs](https://elevenlabs.io/) → create API key (paid plan required for library voices)
 
 Requires Node.js 22.13 or newer.
@@ -68,7 +68,7 @@ node generate.js new --target zh-CN --region Beijing --provider azure --voice zh
 | `--voice`    | `Kore`     | Voice name or id, required for non-Gemini TTS |
 
 The deck is saved as `decks/<learner>-<target>[-level].json` and the review pass prints what it changed. Read through the cards, adjust anything you like, then build it.
-Set `GEMINI_MODEL` in `.env` to use a different Gemini model for deck creation.
+Deck creation uses `gemini-4-argon`; set `GEMINI_MODEL` in `.env` to use a different model, e.g. the cheaper `gemini-3.8-flash`.
 
 ### Choosing a voice
 

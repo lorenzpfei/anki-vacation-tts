@@ -8,7 +8,7 @@ const PROMPT_PATH = path.join(
     path.dirname(fileURLToPath(import.meta.url)),
     'Prompt.md'
 );
-const GEMINI_MODEL = 'gemini-3.6-flash';
+const GEMINI_MODEL = 'gemini-4-argon';
 const MAX_ATTEMPTS = 3;
 
 const text = { type: 'string' };
