@@ -186,7 +186,7 @@ const repoUrl = 'https://github.com/lorenzpfei/anki-vacation-tts';
         <li class="step">
             <div class="step-num">2</div>
             <h4 class="step-title">Generate a deck</h4>
-            <p class="step-copy">Run <code>node generate.js new --target zh-CN --region Beijing</code>. Pick a level (essentials, standard, or advanced).</p>
+            <p class="step-copy">Run <code>node generate.js new --target tr-TR --region Istanbul</code>. Pick a level (essentials, standard, or advanced).</p>
         </li>
         <li class="step">
             <div class="step-num">3</div>
@@ -205,11 +205,11 @@ const repoUrl = 'https://github.com/lorenzpfei/anki-vacation-tts';
     <div class="mt-6 divide-y divide-gray-200 rounded-2xl border border-gray-200 bg-card shadow-lg">
         <details class="group p-4">
             <summary class="cursor-pointer list-none font-medium text-[--text-card]">Where do the voices come from?</summary>
-            <p class="mt-2 text-[--muted-card]">ElevenLabs (premium library voices), Google Cloud TTS Neural2, or Azure Speech — configurable per deck via <code>.env</code>.</p>
+            <p class="mt-2 text-[--muted-card]">Gemini, ElevenLabs, Azure Speech, or Google Cloud TTS — chosen per deck, with API keys in <code>.env</code>.</p>
         </details>
         <details class="group p-4">
             <summary class="cursor-pointer list-none font-medium text-[--text-card]">Can I add a new language?</summary>
-            <p class="mt-2 text-[--muted-card]">Yes — that's the whole point. Copy <code>Prompt.md</code> into ChatGPT, Claude, or any LLM, specify your target language, and it generates a complete deck file. Register it in <code>data.js</code> and run the generator.</p>
+            <p class="mt-2 text-[--muted-card]">Yes — that's the whole point. Run <code>node generate.js new</code> with your target language and region. Gemini drafts the deck, a review pass checks it, and <code>node generate.js &lt;deck&gt;</code> turns it into an Anki package.</p>
         </details>
         <details class="group p-4">
             <summary class="cursor-pointer list-none font-medium text-[--text-card]">What are ritual pairs?</summary>

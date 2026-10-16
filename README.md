@@ -55,7 +55,7 @@ Run `node generate.js` without arguments to list all decks.
 ### Create a new deck
 
 ```bash
-node generate.js new --target zh-CN --region Beijing --provider azure --voice zh-CN-XiaoxiaoNeural
+node generate.js new --target zh-CN --region "mainland China (neutral standard Putonghua)" --provider azure --voice zh-CN-YunyangNeural
 ```
 
 | Option       | Default    | Description                                   |
@@ -74,10 +74,24 @@ Deck creation uses `gemini-4-argon`; set `GEMINI_MODEL` in `.env` to use a diffe
 
 - **Gemini** (`gemini-3.8-flash-tts`): very natural, steered by the `style` text in the deck's `tts` config. Voices: [Gemini speech generation](https://ai.google.dev/gemini-api/docs/speech-generation#voices)
 - **ElevenLabs**: excellent for most European languages and Turkish/Arabic. Voices: [voice library](https://elevenlabs.io/voice-library)
-- **Azure**: the most reliable choice for Mandarin tones in current benchmarks. Voices: [language support](https://learn.microsoft.com/azure/ai-services/speech-service/language-support?tabs=tts)
+- **Azure**: the most reliable choice for Mandarin tones in current benchmarks; the Mandarin deck uses `zh-CN-YunyangNeural`. Clips get a short silence before and after so they don't start abruptly in Anki. HD (DragonHD) voices are only available in some regions. Voices: [language support](https://learn.microsoft.com/azure/ai-services/speech-service/language-support?tabs=tts)
 - **Google Cloud TTS**: Neural2 and Chirp3-HD voices. Voices: [voice list](https://cloud.google.com/text-to-speech/docs/list-voices-and-types)
 
 Changing the voice of a deck regenerates all of its audio on the next build.
+
+## 🌍 Available decks
+
+| Deck                  | Language           | Cards | Voice                       |
+| --------------------- | ------------------ | ----- | --------------------------- |
+| `deDE-arSY-advanced`  | Arabic (Syria)     | 92    | ElevenLabs                  |
+| `deDE-frFR-advanced`  | French             | 96    | ElevenLabs                  |
+| `deDE-hiIN-essential` | Hindi              | 23    | Google Neural2              |
+| `deDE-jaJP`           | Japanese           | 69    | Google Neural2              |
+| `deDE-koKR`           | Korean             | 52    | Google Neural2              |
+| `deDE-trTR`           | Turkish            | 51    | ElevenLabs                  |
+| `deDE-zhCN`           | Mandarin (neutral) | 51    | Azure `zh-CN-YunyangNeural` |
+
+All decks are for German speakers.
 
 ## 📋 Deck format
 
