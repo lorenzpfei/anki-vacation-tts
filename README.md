@@ -68,7 +68,7 @@ node generate.js new --target zh-CN --region "mainland China (neutral standard P
 | `--voice`    | `Kore`     | Voice name or id, required for non-Gemini TTS |
 
 The deck is saved as `decks/<learner>-<target>[-level].json` and the review pass prints what it changed. Read through the cards, adjust anything you like, then build it.
-Deck creation uses `gemini-4-argon`; set `GEMINI_MODEL` in `.env` to use a different model, e.g. the cheaper `gemini-3.8-flash`.
+Deck creation uses `gemini-4-argon`; set `GEMINI_MODEL` in `.env` to use a different model, e.g. the cheaper `gemini-4-hydrogen`.
 
 ### Choosing a voice
 
